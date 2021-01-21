@@ -1,0 +1,16 @@
+1 func
+2 main 
+5 (
+5 )
+5 :
+1 int
+5 {
+2 print
+5 (
+3 Hello World
+5 )
+5 ;
+1 return
+3 0
+5 ;
+5 }

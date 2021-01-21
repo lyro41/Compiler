@@ -1,0 +1,84 @@
+### Type of lexems
+### 1 - reserved
+### 2 - identifier
+### 3 - constant
+### 4 - operator
+### 5 - punctuation
+### 6 - shit
+
+
+###Input:
+func main(void) : void {
+	let Pi = 3.14;
+	let Eps = 1e-2;
+	let Loser = "Loser";
+	let Win = "LoL";
+	if (Pi - Eps <= 22 / 7 && Pi + Eps >= 22 / 7) ### && ~ and?
+		print(Loser);
+	else {
+		print(Win); ### pizdec
+	}
+}
+
+
+###Expected:
+func - 1
+main - 2
+( - 5
+void - 1
+) - 5
+: - 5
+void - 1
+{ - 5
+let - 1
+Pi - 2
+= - 4
+3.14 - 3
+; - 5
+let - 1
+Eps - 2
+= - 4
+1e-2 - 3
+; - 5
+let - 1
+Loser - 2
+= - 4
+Loser - 3
+; - 5
+let - 1
+Win - 2
+= - 4
+LoL - 3
+; - 5
+if - 1
+( - 5
+Pi - 2
+- - 4
+Eps - 2
+<= - 4
+22 - 3
+/ - 4
+7 - 3
+&& - 4
+Pi - 2
++ - 4
+Eps - 2
+>= - 4
+22 - 3
+/ - 4
+7 - 3
+) - 5
+print - 2
+( - 5
+Loser - 2
+) - 5
+; - 5
+else - 1
+{ - 5
+print - 2
+( - 5
+Win - 2
+) - 5
+; - 5
+} - 5
+} - 5
