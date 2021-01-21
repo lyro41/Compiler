@@ -19,13 +19,13 @@ TEST_CLASS(LexicAnalyzerUnitTest) {
   const std::wstring project_name = L"Compiler";
 
   void RunTest(std::wstring input_filename, std::wstring expected_filename) {
-      std::wstring currentPath = std::filesystem::current_path().wstring();
-      size_t project_name_offset = currentPath.find(project_name);
-      size_t first_backslash = currentPath.find_first_of('\\', project_name_offset);
-      currentPath = currentPath.substr(0, first_backslash + 1) + tests_directory + L"\\";
+      std::wstring cur_path = std::filesystem::current_path().wstring();
+      size_t project_name_offset = cur_path.find(project_name);
+      size_t first_backslash = cur_path.find_first_of('\\', project_name_offset);
+      cur_path = cur_path.substr(0, first_backslash + 1) + tests_directory + L"\\";
 
-      std::ifstream file_input(currentPath + input_filename);
-      std::ifstream file_expected(currentPath + expected_filename);
+      std::ifstream file_input(cur_path + input_filename);
+      std::ifstream file_expected(cur_path + expected_filename);
 
       LexicAnalyzer analyzer;
       std::queue<Token> actual_tokens = analyzer.GetTokens(file_input);
