@@ -13,6 +13,7 @@
 #include "OperatorState.h"
 #include "IDState.h"
 #include "LitConstState.h"
+#include "NumberState.h"
 
 class LexicAnalyzer {
  public:
@@ -33,8 +34,9 @@ class LexicAnalyzer {
   OperatorState* GetOperatorState();
   IDState* GetIDState();
   LitConstState* GetLitConstState();
-
+  NumberState* GetNumberState();
   std::wstring GetBuffer();
+  void SetBuffer(std::wstring string);
 
   bool IsPunctuation(wchar_t symbol);
   bool IsOperator(std::wstring string);
@@ -55,7 +57,8 @@ class LexicAnalyzer {
   BeginState begin_state_;
   OperatorState operator_state_;
   IDState id_state_;
-  LitConstState lit_const_state;
+  LitConstState lit_const_state_;
+  NumberState number_state_;
   IState* current_state_;
 };
 

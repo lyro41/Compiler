@@ -12,6 +12,7 @@
 #include "..\Compiler\BeginState.cpp"
 #include "..\Compiler\IDState.cpp"
 #include "..\Compiler\LitConstState.cpp"
+#include "..\Compiler\NumberState.cpp"
 #include "CppUnitTest.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
@@ -54,15 +55,28 @@ TEST_CLASS(LexicAnalyzerUnitTest) {
       Assert::IsTrue(actual_tokens.empty(),
                      L"QUEUE IS NOT EMPTY AFTER TESTING");
   }
+  void RunExceptionTest(std::wstring input_filename) {
+    bool caught = false;
+    try {
+      RunTest(input_filename, input_filename);
+    } catch (std::runtime_error& e) {
+      caught = true;
+    }
+    Assert::IsTrue(caught);
+  }
+
   TEST_METHOD(Operator_1) {
     RunTest(L"operators/1_input.txt", L"operators/1_expected.txt");
   }
+
   TEST_METHOD(Operator_2) {
     RunTest(L"operators/2_input.txt", L"operators/2_expected.txt");
   }
+
   TEST_METHOD(Operator_3) {
     RunTest(L"operators/3_input.txt", L"operators/3_expected.txt");
   }
+
   TEST_METHOD(Comments_1) {
     RunTest(L"comments/1_input.txt", L"comments/1_expected.txt");
   }
@@ -71,8 +85,25 @@ TEST_CLASS(LexicAnalyzerUnitTest) {
     RunTest(L"id/1_input.txt", L"id/1_expected.txt");
   }
   
+
+  TEST_METHOD(Numbers_1) {
+    RunTest(L"numbers/1_input.txt", L"numbers/1_expected.txt");
+  }
+
+  TEST_METHOD(Full_1) { 
+    RunTest(L"full/1_input.txt", L"full/1_expected.txt"); 
+  }
+
   TEST_METHOD(Full_2) {
     RunTest(L"full/2_input.txt", L"full/2_expected.txt");
+  }
+
+  TEST_METHOD(Full_3) { 
+    RunExceptionTest(L"full/3_input.txt");
+  }
+
+  TEST_METHOD(Full_4) { 
+    RunTest(L"full/4_input.txt", L"full/4_expected.txt");
   }
 };
 

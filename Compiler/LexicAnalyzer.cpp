@@ -6,7 +6,8 @@ LexicAnalyzer::LexicAnalyzer(std::wifstream& input_stream) :
       begin_state_(this),
       operator_state_(this),
       id_state_(this),
-      lit_const_state(this),
+      lit_const_state_(this),
+      number_state_(this),
       current_state_(&begin_state_) {
   std::wifstream list_ifstream;
 
@@ -111,9 +112,13 @@ OperatorState* LexicAnalyzer::GetOperatorState() { return &operator_state_; }
 
 IDState* LexicAnalyzer::GetIDState() { return &id_state_; }
 
-LitConstState* LexicAnalyzer::GetLitConstState() { return &lit_const_state; }
+LitConstState* LexicAnalyzer::GetLitConstState() { return &lit_const_state_; }
+
+NumberState* LexicAnalyzer::GetNumberState() { return &number_state_; }
 
 std::wstring LexicAnalyzer::GetBuffer() { return token_buffer_; }
+
+void LexicAnalyzer::SetBuffer(std::wstring string) { token_buffer_ = string; }
 
 bool LexicAnalyzer::IsPunctuation(wchar_t symbol) {
   std::wstring buff(1, symbol);

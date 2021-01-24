@@ -17,7 +17,7 @@ void BeginState::Execute() {
     state_machine_->ChangeState(state_machine_->GetLitConstState());
     return;
   }
-  if (peek == L'\n' || peek == L' ') {
+  if (peek == L'\n' || peek == L' ' || peek == L'\t') {
     state_machine_->SkipChar();
     return;
   }
@@ -26,8 +26,8 @@ void BeginState::Execute() {
     return;
   }
   if (iswdigit(peek)) {
-    state_machine_->AddNextCharToBuffer();
-    //state_machine_->ChangeState(/* TODO */);
+    //state_machine_->AddNextCharToBuffer();
+    state_machine_->ChangeState(state_machine_->GetNumberState());
     return;
   }
   if (iswalpha(peek) || peek == L'_') {

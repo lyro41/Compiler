@@ -7,6 +7,9 @@ LitConstState::LitConstState(LexicAnalyzer* fsm) :
       read_first_char_(false) {}
 
 void LitConstState::Execute() {
+  if (state_machine_->Peek() == '\n' || !state_machine_->HasNext()) {
+    throw std::runtime_error("error: unexpected end of literal constant");
+  }
   if (state_machine_->Peek() == '\\') {
     if (is_char_ && read_first_char_) {
       throw std::runtime_error(

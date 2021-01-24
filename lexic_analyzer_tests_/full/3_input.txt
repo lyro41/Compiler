@@ -8,8 +8,10 @@
 
 
 #Input:
-func main() : int32
-{
-	print("Hello World");
-	return 0;
+func main(void) : void {
+	"
 }
+
+
+#Expected:
+<thrown exception: closing bracket " is not found >
