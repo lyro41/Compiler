@@ -1,16 +1,19 @@
-#pragma once
+#ifndef TOKEN
+#define TOKEN
+
 #include <string>
 
 struct Token {
     enum class Type {
         RESERVED,
         IDENTIFIER,
-        CONSTANT,
+        NUMCONSTANT,
         OPERATOR,
         PUNCTUATION,
-        UNKNOWN
+        LITCONSTANT
     };
-    std::string symbol;
+    std::wstring symbol;
     Type type;
 };
 
+#endif

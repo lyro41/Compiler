@@ -1,13 +1,18 @@
 #include <stdio.h>
+#include <fstream>
+#include <iostream>
+
 #include "LexicAnalyzer.h"
 #include "Token.h"
-#include <fstream>
 
 
 int main() {
-  std::ifstream input("1.txt");
-  LexicAnalyzer anal;
-  Token tk;
-  anal.GetTokens(input);
+  std::wifstream in("D:\\Coding\\Compiler\\lexic_analyzer_tests_");
+  LexicAnalyzer anal(in);
+  try {
+    anal.GetTokens();
+  } catch (std::runtime_error& e) {
+    std::cout << e.what();
+  }
   return 0;
 }
