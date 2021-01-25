@@ -16,6 +16,21 @@
     <Filter Include="UnitTests">
       <UniqueIdentifier>{7f63f50b-f06e-4ed1-a6d5-611dd808794c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="UnitTests\Full">
+      <UniqueIdentifier>{1a33aaee-b9ec-47ab-b46a-c3dc4f923c67}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UnitTests\ID">
+      <UniqueIdentifier>{f04384a0-9559-4279-8fdd-ea3f37e74c06}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UnitTests\Numbers">
+      <UniqueIdentifier>{a64c5fb8-3aac-4f8d-a44f-8bf27a81f94f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UnitTests\LitConstant">
+      <UniqueIdentifier>{fb03d6ca-4715-48d6-945d-5039f4088ad3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UnitTests\Comments">
+      <UniqueIdentifier>{f586fed8-2d49-445b-bf0b-6e4c787bf0e4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -31,11 +46,59 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="..\lexic_analyzer_tests_\1_expected.txt">
-      <Filter>UnitTests</Filter>
+    <Text Include="..\lexic_analyzer_tests_\numbers\1_expected.txt">
+      <Filter>UnitTests\Numbers</Filter>
     </Text>
-    <Text Include="..\lexic_analyzer_tests_\1_input.txt">
-      <Filter>UnitTests</Filter>
+    <Text Include="..\lexic_analyzer_tests_\numbers\1_input.txt">
+      <Filter>UnitTests\Numbers</Filter>
+    </Text>
+    <Text Include="..\lexic_analyzer_tests_\comments\1_expected.txt">
+      <Filter>UnitTests\Comments</Filter>
+    </Text>
+    <Text Include="..\lexic_analyzer_tests_\comments\1_input.txt">
+      <Filter>UnitTests\Comments</Filter>
+    </Text>
+    <Text Include="..\lexic_analyzer_tests_\id\1_expected.txt">
+      <Filter>UnitTests\ID</Filter>
+    </Text>
+    <Text Include="..\lexic_analyzer_tests_\id\1_input.txt">
+      <Filter>UnitTests\ID</Filter>
+    </Text>
+    <Text Include="..\lexic_analyzer_tests_\id\2_expected.txt">
+      <Filter>UnitTests\ID</Filter>
+    </Text>
+    <Text Include="..\lexic_analyzer_tests_\id\2_input.txt">
+      <Filter>UnitTests\ID</Filter>
+    </Text>
+    <Text Include="..\lexic_analyzer_tests_\id\3_expected.txt">
+      <Filter>UnitTests\ID</Filter>
+    </Text>
+    <Text Include="..\lexic_analyzer_tests_\id\3_input.txt">
+      <Filter>UnitTests\ID</Filter>
+    </Text>
+    <Text Include="..\lexic_analyzer_tests_\full\1_expected.txt">
+      <Filter>UnitTests\Full</Filter>
+    </Text>
+    <Text Include="..\lexic_analyzer_tests_\full\1_input.txt">
+      <Filter>UnitTests\Full</Filter>
+    </Text>
+    <Text Include="..\lexic_analyzer_tests_\full\2_expected.txt">
+      <Filter>UnitTests\Full</Filter>
+    </Text>
+    <Text Include="..\lexic_analyzer_tests_\full\2_input.txt">
+      <Filter>UnitTests\Full</Filter>
+    </Text>
+    <Text Include="..\lexic_analyzer_tests_\full\3.txt">
+      <Filter>UnitTests\Full</Filter>
+    </Text>
+    <Text Include="..\lexic_analyzer_tests_\full\3_input.txt">
+      <Filter>UnitTests\Full</Filter>
+    </Text>
+    <Text Include="..\lexic_analyzer_tests_\full\4_expected.txt">
+      <Filter>UnitTests\Full</Filter>
+    </Text>
+    <Text Include="..\lexic_analyzer_tests_\full\4_input.txt">
+      <Filter>UnitTests\Full</Filter>
     </Text>
   </ItemGroup>
 </Project>
