@@ -140,11 +140,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BeginState.cpp" />
+    <ClCompile Include="IDState.cpp" />
+    <ClCompile Include="IState.cpp" />
     <ClCompile Include="LexicAnalyzer.cpp" />
+    <ClCompile Include="LitConstState.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="NumberState.cpp" />
+    <ClCompile Include="OperatorState.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BeginState.h" />
+    <ClInclude Include="IDState.h" />
+    <ClInclude Include="IState.h" />
     <ClInclude Include="LexicAnalyzer.h" />
+    <ClInclude Include="LitConstState.h" />
+    <ClInclude Include="NumberState.h" />
+    <ClInclude Include="OperatorState.h" />
     <ClInclude Include="Token.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

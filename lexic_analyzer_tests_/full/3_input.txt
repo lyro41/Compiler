@@ -1,0 +1,17 @@
+# Type of lexems
+# 1 - reserved
+# 2 - identifier
+# 3 - constant
+# 4 - operator
+# 5 - punctuation
+# 6 - shit
+
+
+#Input:
+func main(void) : void {
+	"
+}
+
+
+#Expected:
+<thrown exception: closing bracket " is not found >

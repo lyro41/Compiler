@@ -8,7 +8,7 @@
 
 
 #Input:
-func main() : int
+func main() : int32
 {
 	print("Hello World");
 	return 0;

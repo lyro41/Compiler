@@ -1,0 +1,23 @@
+import "IDState.h"
+import "LexicAnalyzer.h"
+
+# GAVNOOOOOOOOO
+
+func IDState(LexicAnalyzer @fsm) : void {
+  state_machine_(fsm);
+}
+
+func Execute() : void {
+  if (isalnum(Peek()) or Peek() == '_') {
+    AddNextCharToBuffer();
+    return;
+  } 
+  if (IsReserved(GetBuffer())) {
+    AddBufferToQueue(RESERVED);
+  } else {
+    AddBufferToQueue(IDENTIFIER);
+  }
+  ChangeState(GetBeginState());
+}
+
+# OOOOOOOOONVAG
