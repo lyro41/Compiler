@@ -170,8 +170,24 @@
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="..\lexic_analyzer_tests_\1_expected.txt" />
-    <Text Include="..\lexic_analyzer_tests_\1_input.txt" />
+    <Text Include="..\lexic_analyzer_tests_\comments\1_expected.txt" />
+    <Text Include="..\lexic_analyzer_tests_\comments\1_input.txt" />
+    <Text Include="..\lexic_analyzer_tests_\full\1_expected.txt" />
+    <Text Include="..\lexic_analyzer_tests_\full\1_input.txt" />
+    <Text Include="..\lexic_analyzer_tests_\full\2_expected.txt" />
+    <Text Include="..\lexic_analyzer_tests_\full\2_input.txt" />
+    <Text Include="..\lexic_analyzer_tests_\full\3.txt" />
+    <Text Include="..\lexic_analyzer_tests_\full\3_input.txt" />
+    <Text Include="..\lexic_analyzer_tests_\full\4_expected.txt" />
+    <Text Include="..\lexic_analyzer_tests_\full\4_input.txt" />
+    <Text Include="..\lexic_analyzer_tests_\id\1_expected.txt" />
+    <Text Include="..\lexic_analyzer_tests_\id\1_input.txt" />
+    <Text Include="..\lexic_analyzer_tests_\id\2_expected.txt" />
+    <Text Include="..\lexic_analyzer_tests_\id\2_input.txt" />
+    <Text Include="..\lexic_analyzer_tests_\id\3_expected.txt" />
+    <Text Include="..\lexic_analyzer_tests_\id\3_input.txt" />
+    <Text Include="..\lexic_analyzer_tests_\numbers\1_expected.txt" />
+    <Text Include="..\lexic_analyzer_tests_\numbers\1_input.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
