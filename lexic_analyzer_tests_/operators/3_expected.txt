@@ -1,6 +1,6 @@
-4 +
-4 /
-4 -
-4 -=
-4 ++
-4 /
+OPERATOR +
+OPERATOR /
+OPERATOR -
+OPERATOR -=
+OPERATOR ++
+OPERATOR /

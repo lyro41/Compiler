@@ -5,6 +5,8 @@
 #include <sstream>
 #include <string>
 #include <algorithm>
+#include <map>
+
 #include "..\Compiler\LexicAnalyzer.cpp"
 #include "..\Compiler\LexicAnalyzer.h"
 #include "..\Compiler\Token.h"
@@ -23,6 +25,15 @@ TEST_CLASS(LexicAnalyzerUnitTest) {
  public:
   const std::wstring tests_directory = L"lexic_analyzer_tests_";
   const std::wstring project_name = L"Compiler";
+
+  std::map<Token::Type, std::wstring> token_names {
+      { Token::Type::RESERVED, L"RESERVED" },
+      { Token::Type::IDENTIFIER, L"IDENTIFIER" }, 
+      { Token::Type::NUMCONSTANT, L"NUMERIC_CONSTANT"},
+      { Token::Type::OPERATOR, L"OPERATOR" },
+      { Token::Type::PUNCTUATION, L"PUNCTUATION" },
+      { Token::Type::LITCONSTANT, L"LITERAL_CONSTANT" }
+  };
 
   void RunTest(std::wstring input_filename, std::wstring expected_filename) {
       std::wstring cur_path = std::filesystem::current_path().wstring();
@@ -48,13 +59,14 @@ TEST_CLASS(LexicAnalyzerUnitTest) {
           Assert::IsTrue(!actual_tokens.empty(), L"QUEUE IS EMPTY");
 
           Token actual_token = actual_tokens.front();
-          Assert::IsTrue(line.compare(std::to_wstring((int)actual_token.type) +
-                         L" " + actual_token.symbol), L"TOKENS DO NOT MATCH");
+          Assert::IsTrue(line.compare(token_names[actual_token.type] + L" " 
+                         + actual_token.symbol) == 0, L"TOKENS DO NOT MATCH");
           actual_tokens.pop();
       }
       Assert::IsTrue(actual_tokens.empty(),
                      L"QUEUE IS NOT EMPTY AFTER TESTING");
   }
+
   void RunExceptionTest(std::wstring input_filename) {
     bool caught = false;
     try {
@@ -90,6 +102,18 @@ TEST_CLASS(LexicAnalyzerUnitTest) {
     RunTest(L"numbers/1_input.txt", L"numbers/1_expected.txt");
   }
 
+  TEST_METHOD(Numbers_2) {
+    RunTest(L"numbers/2_input.txt", L"numbers/2_expected.txt");
+  }
+
+  TEST_METHOD(Numbers_3) {
+    RunTest(L"numbers/3_input.txt", L"numbers/3_expected.txt");
+  }
+
+  TEST_METHOD(Numbers_4_exception) {
+    RunExceptionTest(L"numbers/4_input.txt");
+  }
+
   TEST_METHOD(Full_1) { 
     RunTest(L"full/1_input.txt", L"full/1_expected.txt"); 
   }
@@ -98,7 +122,7 @@ TEST_CLASS(LexicAnalyzerUnitTest) {
     RunTest(L"full/2_input.txt", L"full/2_expected.txt");
   }
 
-  TEST_METHOD(Full_3) { 
+  TEST_METHOD(Full_3_exception) { 
     RunExceptionTest(L"full/3_input.txt");
   }
 
