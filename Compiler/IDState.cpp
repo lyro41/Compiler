@@ -9,9 +9,13 @@ void IDState::Execute() {
     return;
   } 
   if (state_machine_->IsReserved(state_machine_->GetBuffer())) {
+    if (state_machine_->IsOperator(state_machine_->GetBuffer())) {
+      state_machine_->AddBufferToQueue(Token::Type::OPERATOR);
+      goto change_state;
+    } 
     state_machine_->AddBufferToQueue(Token::Type::RESERVED);
-  } else {
-    state_machine_->AddBufferToQueue(Token::Type::IDENTIFIER);
-  }
-  state_machine_->ChangeState(state_machine_->GetBeginState());
+    goto change_state;
+  } 
+  state_machine_->AddBufferToQueue(Token::Type::IDENTIFIER);
+  change_state: state_machine_->ChangeState(state_machine_->GetBeginState());
 }
