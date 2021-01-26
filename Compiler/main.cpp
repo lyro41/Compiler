@@ -61,7 +61,7 @@ int main(int argc, const char* argv[]) {
   file_input.close();
 
   std::wfstream file_output("output_tokens.txt",
-                            std::ios::out | std::ios::app);
+                            std::ios::out);
   if (!file_output.is_open()) {
     std::cout << "Unable to open output stream\n";
     std::cin.get();
