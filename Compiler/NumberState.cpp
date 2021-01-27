@@ -20,9 +20,9 @@ void NumberState::Execute() {
         return;
       } 
       if (low_peek == L'x') {
-        state_machine_->SkipChar();
+        state_machine_->AddNextCharToBuffer();
         low_peek = towlower(state_machine_->Peek());
-        if (state_machine_->GetBuffer() != L"0") {
+        if (state_machine_->GetBuffer() != L"0x") {
           throw std::runtime_error("error: hex value only can start with 0x");
         } 
         if (!(iswdigit(low_peek) || low_peek >= L'a' && low_peek <= L'f')) {
@@ -43,11 +43,6 @@ void NumberState::Execute() {
       break;
     case NumberState::State::HEX:
       if (!(iswdigit(low_peek) || (low_peek >= L'a' && low_peek <= L'f'))) {
-        std::wstringstream stringstream;
-        stringstream << std::hex << state_machine_->GetBuffer();
-        size_t tmp;
-        stringstream >> tmp;
-        state_machine_->SetBuffer(std::to_wstring(tmp));
         state_machine_->AddBufferToQueue(Token::Type::NUMCONSTANT);
         state_machine_->ChangeState(state_machine_->GetBeginState());
         state_ = State::INTEGER;
