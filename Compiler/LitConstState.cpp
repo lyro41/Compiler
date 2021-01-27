@@ -20,6 +20,7 @@ void LitConstState::Execute() {
     read_first_char_ = true;
     state_machine_->AddCharToBuffer(
         state_machine_->ToControl(state_machine_->Peek()));
+    state_machine_->SkipChar();
     return;
   }
 
