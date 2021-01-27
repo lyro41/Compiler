@@ -14,6 +14,15 @@ int main(int argc, const char* argv[]) {
     return -1;
   }
 
+  std::wstring token_type[] = {
+        L"RESERVED", 
+        L"IDENTIFIER", 
+        L"NUMERIC_CONSTANT", 
+        L"LITERAL_CONSTANT", 
+        L"OPERATOR", 
+        L"PUNCTUATION"
+  };
+
   std::wifstream file_input(argv[1]);
   if (!file_input.is_open()) {
     std::cout << "Unable to open analyzed file\n";
@@ -51,7 +60,7 @@ int main(int argc, const char* argv[]) {
   }
   file_input.close();
 
-  std::wfstream file_output("output_tokens.txt", std::ios::out | std::ios::app);
+  std::wfstream file_output("output_tokens.txt", std::ios::out);
   if (!file_output.is_open()) {
     std::cout << "Unable to open output stream\n";
     std::cin.get();
@@ -60,8 +69,8 @@ int main(int argc, const char* argv[]) {
   while (!tokens.empty()) {
     Token cur_token = tokens.front();
     std::wstring line;
-    line += cur_token.symbol + L" "
-          + std::to_wstring((int)(cur_token.type)) + L"\n";
+    line += token_type[static_cast<int>(cur_token.type)] +
+            L" " + cur_token.symbol + L"\n";
     file_output << line;
     tokens.pop();
   }
