@@ -6,6 +6,7 @@
 #include <string>
 #include <set>
 #include <map>
+#include <exception>
 
 #include "Token.h"
 #include "IState.h"
@@ -43,8 +44,14 @@ class LexicAnalyzer {
   bool IsReserved(std::wstring string);
   wchar_t ToControl(wchar_t symbol);
 
+  void ThrowException(const char* message);
+
  private:
   void Run();
+
+
+  size_t current_line_;
+  size_t current_character_;
 
   std::set<std::wstring> reserved_;
   std::set<std::wstring> operators_;
