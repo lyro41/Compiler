@@ -3,6 +3,8 @@
 LexicAnalyzer::LexicAnalyzer(std::wifstream& input_stream) : 
       input_stream_(input_stream),
       token_buffer_(L""),
+      current_line_(1),
+      current_character_(0),
       begin_state_(this),
       operator_state_(this),
       id_state_(this),
@@ -74,11 +76,21 @@ void LexicAnalyzer::ChangeState(IState* state) {
 
 wchar_t LexicAnalyzer::Peek() { return input_stream_.peek(); }
 
-void LexicAnalyzer::SkipChar() { input_stream_.get(); }
+void LexicAnalyzer::SkipChar() { 
+  wchar_t peek = input_stream_.peek();
+  if (peek == '\n') {
+    ++current_line_;
+    current_character_ = 0;
+  }
+  else ++current_character_;
+  input_stream_.get();
+}
 
 void LexicAnalyzer::SkipLine() { 
   std::wstring tmp;
   std::getline(input_stream_, tmp);
+  ++current_line_;
+  current_character_ = 0;
 }
 
 bool LexicAnalyzer::HasNext() {
@@ -87,10 +99,14 @@ bool LexicAnalyzer::HasNext() {
 }
 
 void LexicAnalyzer::AddNextCharToBuffer() {
+  wchar_t peek = input_stream_.peek();
+  ++current_character_;
   token_buffer_.push_back(input_stream_.get());
 }
 
 void LexicAnalyzer::AddCharToBuffer(wchar_t symbol) {
+  wchar_t peek = input_stream_.peek();
+  ++current_character_;
   token_buffer_.push_back(symbol);
 }
 
@@ -138,3 +154,19 @@ wchar_t LexicAnalyzer::ToControl(wchar_t symbol) {
 }
 
 void LexicAnalyzer::Run() { current_state_->Execute(); }
+
+void LexicAnalyzer::ThrowException(const char* msg) { 
+  std::string full_error_message = "LEXIC ANALYZER ERROR!\n";
+  full_error_message += msg;
+  full_error_message.push_back('\n');
+  full_error_message += "at line " + std::to_string(current_line_)
+                     + " char " + std::to_string(current_character_)
+                     + " \"";
+  if (HasNext()) {
+    full_error_message.push_back(Peek());
+  } else {
+    full_error_message += "eof";
+  }
+  full_error_message += "\"";
+  throw std::runtime_error(full_error_message);
+}

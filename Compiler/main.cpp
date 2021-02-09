@@ -8,6 +8,10 @@
 
 
 int main(int argc, const char* argv[]) {
+  #ifdef _DEBUG
+  argc = 2;
+  argv[1] = "debug.txt";
+  #endif
   if (argc < 2) {
     std::cout << "Analyzed file is not defined!\n";
     std::cin.get();

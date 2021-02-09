@@ -8,7 +8,8 @@ LitConstState::LitConstState(LexicAnalyzer* fsm) :
 
 void LitConstState::Execute() {
   if (state_machine_->Peek() == '\n' || !state_machine_->HasNext()) {
-    throw std::runtime_error("error: unexpected end of literal constant");
+    state_machine_->ThrowException(
+          "error: unexpected end of literal constant");
   }
   if (state_machine_->Peek() == '\\') {
     if (is_char_ && read_first_char_) {
@@ -27,8 +28,9 @@ void LitConstState::Execute() {
   if (is_char_) {
     if (state_machine_->Peek() != '\'') {
       if (read_first_char_) {
-        throw std::runtime_error("exception thrown: data-type char"
-                                 "can only contain single character");
+        state_machine_->ThrowException(
+            "exception thrown: data-type char "
+            "can only contain single character");
       }
       state_machine_->AddNextCharToBuffer();
       read_first_char_ = true;
@@ -41,8 +43,9 @@ void LitConstState::Execute() {
       ResetState();
       return;
     }
-    throw std::runtime_error("exception thrown: data-type char"
-                             "can only contain single character");
+    state_machine_->ThrowException(
+        "exception thrown: data-type char "
+        "can only contain single character");
   } else {
     if (state_machine_->Peek() != '\"') {
       state_machine_->AddNextCharToBuffer();

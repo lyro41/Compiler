@@ -45,5 +45,5 @@ void BeginState::Execute() {
     state_machine_->ChangeState(state_machine_->GetOperatorState());
     return;
   }
-  throw std::runtime_error("exception thrown: unexpected symbol " + state_machine_->Peek());
+  state_machine_->ThrowException("exception thrown: unexpected symbol ");
 }

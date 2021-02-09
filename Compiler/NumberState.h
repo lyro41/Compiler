@@ -19,8 +19,10 @@ class NumberState : public IState {
     INTEGER,
     HEX,
     EFOUND,
-    WAITNUM,
-    FLOATEXP
+    EWAITNUM,
+    EXP,
+    FLOAT,
+    ONLYINTEGER
   };
   State state_;
   LexicAnalyzer* state_machine_;
