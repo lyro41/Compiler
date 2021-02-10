@@ -23,7 +23,8 @@ void NumberState::Execute() {
         state_machine_->AddNextCharToBuffer();
         low_peek = towlower(state_machine_->Peek());
         if (state_machine_->GetBuffer() != L"0x") {
-          throw std::runtime_error("error: hex value only can start with 0x");
+          state_machine_->ThrowException(
+              "error: hex value only can start with 0x");
         } 
         if (!(iswdigit(low_peek) || low_peek >= L'a' && low_peek <= L'f')) {
           state_machine_->ThrowException(
