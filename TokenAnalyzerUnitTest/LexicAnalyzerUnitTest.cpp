@@ -7,14 +7,14 @@
 #include <algorithm>
 #include <map>
 
-#include "..\Compiler\LexicAnalyzer.cpp"
-#include "..\Compiler\LexicAnalyzer.h"
-#include "..\Compiler\Token.h"
-#include "..\Compiler\OperatorState.cpp"
-#include "..\Compiler\BeginState.cpp"
-#include "..\Compiler\IDState.cpp"
-#include "..\Compiler\LitConstState.cpp"
-#include "..\Compiler\NumberState.cpp"
+#include "Token.h"
+#include "LexicAnalyzer\LexicAnalyzer.cpp"
+#include "LexicAnalyzer\LexicAnalyzer.h"
+#include "LexicAnalyzer\OperatorState.cpp"
+#include "LexicAnalyzer\BeginState.cpp"
+#include "LexicAnalyzer\IDState.cpp"
+#include "LexicAnalyzer\LitConstState.cpp"
+#include "LexicAnalyzer\NumberState.cpp"
 #include "CppUnitTest.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;

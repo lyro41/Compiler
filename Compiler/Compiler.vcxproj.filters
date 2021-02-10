@@ -1,69 +1,90 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
+    <Filter Include="LexicAnalyzer">
+      <UniqueIdentifier>{f283bc15-7684-40b2-a996-a19ec4810507}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="LexicAnalyzer\Source Files">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="Header Files">
+    <Filter Include="LexicAnalyzer\Header Files">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
-    <Filter Include="Header Files\Resource Files">
+    <Filter Include="LexicAnalyzer\Header Files\Resource Files">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Parser">
+      <UniqueIdentifier>{22696f49-4fee-4c92-8410-df874584dfab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Parser\Source Files">
+      <UniqueIdentifier>{bd6731e8-49ce-4418-9da3-9d0ef280a6b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Parser\Header Files">
+      <UniqueIdentifier>{22df58f4-4e31-42ff-89c7-9d0f2ce843f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shared">
+      <UniqueIdentifier>{b2f02eda-1145-45b9-a9ce-4b0e552436fc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Parser.cpp">
+      <Filter>Parser\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LexicAnalyzer\BeginState.cpp">
+      <Filter>LexicAnalyzer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LexicAnalyzer\OperatorState.cpp">
+      <Filter>LexicAnalyzer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LexicAnalyzer\NumberState.cpp">
+      <Filter>LexicAnalyzer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LexicAnalyzer\LitConstState.cpp">
+      <Filter>LexicAnalyzer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LexicAnalyzer\LexicAnalyzer.cpp">
+      <Filter>LexicAnalyzer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LexicAnalyzer\IState.cpp">
+      <Filter>LexicAnalyzer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LexicAnalyzer\IDState.cpp">
+      <Filter>LexicAnalyzer\Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="LexicAnalyzer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="IState.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="BeginState.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="OperatorState.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="IDState.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="LitConstState.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="NumberState.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Shared</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BeginState.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Parser.h">
+      <Filter>Parser\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="IState.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="LexicAnalyzer\BeginState.h">
+      <Filter>LexicAnalyzer\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="LexicAnalyzer.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="LexicAnalyzer\IDState.h">
+      <Filter>LexicAnalyzer\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="OperatorState.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="LexicAnalyzer\IState.h">
+      <Filter>LexicAnalyzer\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="IDState.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="LexicAnalyzer\LexicAnalyzer.h">
+      <Filter>LexicAnalyzer\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="LitConstState.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="LexicAnalyzer\LitConstState.h">
+      <Filter>LexicAnalyzer\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LexicAnalyzer\NumberState.h">
+      <Filter>LexicAnalyzer\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LexicAnalyzer\OperatorState.h">
+      <Filter>LexicAnalyzer\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Token.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="NumberState.h">
-      <Filter>Header Files</Filter>
+      <Filter>Shared</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -122,6 +122,17 @@ std::queue<Token> LexicAnalyzer::GetTokens() {
   return current_token_queue_;
 }
 
+Token LexicAnalyzer::GetToken()
+{
+  while (current_token_queue_.empty() && (HasNext() || !token_buffer_.empty()))
+  {
+    Run();
+  }
+  Token poppedToken = current_token_queue_.front();
+  current_token_queue_.pop();
+  return poppedToken;
+}
+
 BeginState* LexicAnalyzer::GetBeginState() { return &begin_state_; }
 
 OperatorState* LexicAnalyzer::GetOperatorState() { return &operator_state_; }

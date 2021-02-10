@@ -31,6 +31,7 @@ class LexicAnalyzer {
   void AddBufferToQueue(Token::Type token_type);
 
   std::queue<Token> GetTokens();
+  Token GetToken();
   BeginState* GetBeginState();
   OperatorState* GetOperatorState();
   IDState* GetIDState();

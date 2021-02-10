@@ -78,6 +78,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(ProjectDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -141,23 +142,25 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="BeginState.cpp" />
-    <ClCompile Include="IDState.cpp" />
-    <ClCompile Include="IState.cpp" />
-    <ClCompile Include="LexicAnalyzer.cpp" />
-    <ClCompile Include="LitConstState.cpp" />
+    <ClCompile Include="LexicAnalyzer\BeginState.cpp" />
+    <ClCompile Include="LexicAnalyzer\IDState.cpp" />
+    <ClCompile Include="LexicAnalyzer\IState.cpp" />
+    <ClCompile Include="LexicAnalyzer\LexicAnalyzer.cpp" />
+    <ClCompile Include="LexicAnalyzer\LitConstState.cpp" />
+    <ClCompile Include="LexicAnalyzer\NumberState.cpp" />
+    <ClCompile Include="LexicAnalyzer\OperatorState.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="NumberState.cpp" />
-    <ClCompile Include="OperatorState.cpp" />
+    <ClCompile Include="Parser.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BeginState.h" />
-    <ClInclude Include="IDState.h" />
-    <ClInclude Include="IState.h" />
-    <ClInclude Include="LexicAnalyzer.h" />
-    <ClInclude Include="LitConstState.h" />
-    <ClInclude Include="NumberState.h" />
-    <ClInclude Include="OperatorState.h" />
+    <ClInclude Include="LexicAnalyzer\BeginState.h" />
+    <ClInclude Include="LexicAnalyzer\IDState.h" />
+    <ClInclude Include="LexicAnalyzer\IState.h" />
+    <ClInclude Include="LexicAnalyzer\LexicAnalyzer.h" />
+    <ClInclude Include="LexicAnalyzer\LitConstState.h" />
+    <ClInclude Include="LexicAnalyzer\NumberState.h" />
+    <ClInclude Include="LexicAnalyzer\OperatorState.h" />
+    <ClInclude Include="Parser.h" />
     <ClInclude Include="Token.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

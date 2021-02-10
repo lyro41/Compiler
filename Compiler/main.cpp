@@ -3,7 +3,7 @@
 #include <iostream>
 #include <string>
 
-#include "LexicAnalyzer.h"
+#include "LexicAnalyzer/LexicAnalyzer.h"
 #include "Token.h"
 
 
