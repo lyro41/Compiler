@@ -1,1 +1,17 @@
-2e5.34
+# Type of lexems
+# 1 - reserved
+# 2 - identifier
+# 3 - constant
+# 4 - operator
+# 5 - punctuation
+# 6 - shit
+
+
+#Input:
+func main() : int
+{
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   int a = 5;
+   ++a = 4 >> 2
+   return 1;
+}

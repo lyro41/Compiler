@@ -25,6 +25,9 @@ class LexicAnalyzer {
   void SkipChar();
   void SkipLine();
   bool HasNext();
+  bool HasNextToken();
+
+  std::pair<size_t, size_t> GetCursorPosition();
 
   void AddNextCharToBuffer();
   void AddCharToBuffer(wchar_t symbol);

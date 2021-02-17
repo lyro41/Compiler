@@ -98,6 +98,18 @@ bool LexicAnalyzer::HasNext() {
   return !input_stream_.eof();
 }
 
+bool LexicAnalyzer::HasNextToken() {
+  while (current_token_queue_.empty() &&
+         (HasNext() || !token_buffer_.empty())) {
+    Run();
+  }
+  return !current_token_queue_.empty();
+}
+
+std::pair<size_t, size_t> LexicAnalyzer::GetCursorPosition() {
+  return std::make_pair(current_line_, current_character_);
+}
+
 void LexicAnalyzer::AddNextCharToBuffer() {
   wchar_t peek = input_stream_.peek();
   ++current_character_;

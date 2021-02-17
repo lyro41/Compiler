@@ -1,0 +1,75 @@
+﻿<Program> ::= <Preprocessor> { <Function> }
+
+<Preprocessor> ::= { import <Literal Const> }
+
+<Function> ::= func <Identifier> ([<Arguments> | eps]) : <Concrete Type> [<Func Body> | ;]
+
+<Type> ::= <Const Type> | <Concrete Type>
+
+<Const Type> ::= const <Concrete Type>
+
+<Concrete Type> ::= <Identifier> {@}
+
+<Arguments> ::= <Type> <Identifier> | <Type> <Identifier> , <Arguments>
+
+<Func Body> ::= '{' {<Statement>} '}'
+
+<Body> ::= <Func Body> | <Statement>
+
+<Statement> ::= <Var Definitions>; | '{' {<Statement>} '}' | <Expr>; | <goto>; | <if> | <switch> | <while> | <for> | <do while>;
+
+<Var Definitions> ::= <Type> <Vars>
+<Vars> ::= <Var Definition>, <Vars> | <Var Definition>
+<Var Definition> ::= <Identifier> | <Identifier> = <Expr>
+
+<Expr> ::= <Assignment Expr> | <Assignment Expr> , <Expr>
+<Expr List> ::= <Expr> | <Expr>, <Expr List>
+<Assignment Expr> ::= <Logical Implication> <Assignment Operator> <Init Expr> | <Logical Implication>
+<Init Expr> ::= <Assignment Expr> | <Init List>
+<Init List> ::= '{' <Init List Seq> '}'
+<Init List Seq> ::= <Assignment Expr> | <Assignment Expr> , <Init List Seq>
+
+<Logical Implication> ::= <Logical Or> -> <Logical Implication> | <Logical Or>
+<Logical Or> ::= <Logical And> ['||' | or] <Logical Or> | <Logical And>
+<Logical And> ::= <Bitwise Or> [&& | and] <Logical And> | <Bitwise Or>
+
+<Bitwise Or> ::= <Bitwise Xor> '|' <Bitwise And> | <Bitwise Xor>
+<Bitwise Xor> ::= <Bitwise And> [^ | xor] <Bitwise Xor> | <Bitwise And>
+<Bitwise And> ::= <Comparison Equality> & <Bitwise And> | <Comparison Equality>
+
+<Comparison Equality> ::= <Comparison Comparison> [== | !=] <Comparison Equality> | <Comparison Comparison>
+<Comparison Comparison> ::= <Shift> [> | >= | < | <=] <Comparison Comparison> | <Shift>
+
+<Shift> ::= <Sumsub> [>> | <<] <Shift> | <Sumsub>
+
+<Sumsub> ::= <Muldiv> [+ | -] <Sumsub> | <Muldiv>
+
+<Muldiv> ::= <Power> [/ | // | * || %] <Muldiv> | <Power>
+
+<Power> ::= <Unary> ** <Power> | <Unary>
+
+<Unary> ::= [++ | -- | ~ | ! | not | - | + | @ | ?] <Unary> | <GenSec>
+
+<GenSec> ::= <Namespace> [++ | -- | '(' [<Expr List> | eps] ')' | '[' <Expr List> ']'] | cast '<' <Type> '>' '(' <Expr> ')' | <Namespace>
+
+<Namespace> ::= $ <Identifier> | <Identifier> $ <Nested Namespace> | <Operand>
+<Nested Namespace> ::= <Identifier> | <Identifier> $ <Nested Namespace>
+
+<Operand> ::= ( <Expr> ) | <Identifier> | <Numeric Constant> | <Literal Constant>
+
+<Assignment Operator> ::= = | <<= | >>= | += | ->= | -= | *= | **= | /= | //= | ^= | &= | |= | %=
+
+
+<if> ::= if ( <Expr> ) <Body> [else <Body> | eps]
+
+<switch> ::= switch ( <Expr> ) '{' {case <Expr>: { <Statement> } [default: { <Statement> } | eps] '}'
+ 
+<while> ::= while ( <Expr> ) <Body> [else <Body> | eps]
+
+<for> ::= for ( [<Expr> | <Variable Definitions> | eps]; [<Expr> | eps]; [<Expr> | eps] ) <Body> [else <Body> | eps]
+
+<do while> ::= do <Body> while ( <Expr> )
+
+<goto> ::= [goto <Identifier> | break | continue | <return>]
+
+<return> ::= return [<Expr> | eps]
