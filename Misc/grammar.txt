@@ -2,7 +2,7 @@
 
 <Preprocessor> ::= { import <Literal Const> }
 
-<Function> ::= func <Identifier> ([<Arguments> | eps]) : <Concrete Type> [<Func Body> | ;]
+<Function> ::= func <Identifier> ([<Arguments> | eps | void]) : <Concrete Type> [<Func Body> | ;]
 
 <Type> ::= <Const Type> | <Concrete Type>
 
@@ -23,7 +23,6 @@
 <Var Definition> ::= <Identifier> | <Identifier> = <Expr>
 
 <Expr> ::= <Assignment Expr> | <Assignment Expr> , <Expr>
-<Expr List> ::= <Expr> | <Expr>, <Expr List>
 <Assignment Expr> ::= <Logical Implication> <Assignment Operator> <Init Expr> | <Logical Implication>
 <Init Expr> ::= <Assignment Expr> | <Init List>
 <Init List> ::= '{' <Init List Seq> '}'
@@ -50,7 +49,7 @@
 
 <Unary> ::= [++ | -- | ~ | ! | not | - | + | @ | ?] <Unary> | <GenSec>
 
-<GenSec> ::= <Namespace> [++ | -- | '(' [<Expr List> | eps] ')' | '[' <Expr List> ']'] | cast '<' <Type> '>' '(' <Expr> ')' | <Namespace>
+<GenSec> ::= <Namespace> [++ | -- | '(' [<Expr> | eps] ')' | '[' <Expr> ']'] | cast '<' <Type> '>' '(' <Expr> ')' | <Namespace>
 
 <Namespace> ::= $ <Identifier> | <Identifier> $ <Nested Namespace> | <Operand>
 <Nested Namespace> ::= <Identifier> | <Identifier> $ <Nested Namespace>

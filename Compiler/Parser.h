@@ -38,13 +38,13 @@ class Parser
     void ParseVars();
     void ParseVarDef();
     void ParseExpr();
-    void ParseExprList();
     void ParseAssExpr();  
     void ParseInitExpr();
     void ParseLogImp();
     void ParseLogOr();
     void ParseLogAnd();
     void ParseBitOr();
+    void ParseBitXor();
     void ParseBitAnd();
     void ParseCompeq();
     void ParseCompcomp();

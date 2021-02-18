@@ -5,7 +5,7 @@ Parser::Parser(LexicAnalyzer* analyzer) : analyzer_(analyzer) {}
 void Parser::Parse() {ParseProgram();}
 
 Token Parser::get() { 
-  if (analyzer_->HasNext()) {
+  if (analyzer_->HasNextToken()) {
     return analyzer_->GetToken();
   } else {
     throw std::runtime_error("Unexpected end of tokens");
@@ -15,7 +15,8 @@ Token Parser::get() {
 bool Parser::IsType(Token token) {
   return   token.symbol == L"int"
         || token.symbol == L"float"
-        || token.symbol == L"string";
+        || token.symbol == L"string"
+        || token.symbol == L"let";
 }
 
 bool Parser::IsAssignmentOperator(Token token) {
@@ -36,11 +37,6 @@ bool Parser::IsAssignmentOperator(Token token) {
 
 bool Parser::IsPrefixUnaryOperator(Token token) {
   return token.symbol == L"++" ||
-         token.symbol == L"--";
-}
-
-bool Parser::IsPostfixUnaryOperator(Token token) {
-  return token.symbol == L"++" ||
          token.symbol == L"--" ||
          token.symbol == L"~" ||
          token.symbol == L"!" ||
@@ -49,6 +45,10 @@ bool Parser::IsPostfixUnaryOperator(Token token) {
          token.symbol == L"-" ||
          token.symbol == L"@" ||
          token.symbol == L"?";
+}
+
+bool Parser::IsPostfixUnaryOperator(Token token) {
+  return token.symbol == L"++" || token.symbol == L"--";
 }
 
 void Parser::ThrowException(std::string message) {
@@ -142,9 +142,12 @@ void Parser::ParseConstType() {
 
 void Parser::ParseArguments() {
   if (curToken_.symbol == L")") return;
+  if (curToken_.symbol == L"void") {
+    curToken_ = get();
+    return;
+  }
   ParseType();
 
-  curToken_ = get();
   if (curToken_.type != Token::Type::IDENTIFIER) {
     if (curToken_.type == Token::Type::RESERVED) {
       ThrowException("Misuse of reserved word");
@@ -154,7 +157,7 @@ void Parser::ParseArguments() {
   }
 
   curToken_ = get();
-  while (curToken_.symbol != L",") {
+  while (curToken_.symbol == L",") {
     curToken_ = get();
     ParseType();
 
@@ -262,6 +265,7 @@ void Parser::ParseMultipleStatementsInCase() {
          || curToken_.symbol != L"default") {
     ParseStatement();
   }
+  curToken_ = get();
 }
 
 void Parser::ParseVarDefs() {
@@ -297,15 +301,6 @@ void Parser::ParseExpr() {
   while (curToken_.symbol == L",") {
     curToken_ = get();
     ParseAssExpr();
-  }
-}
-
-void Parser::ParseExprList() {
-  
-  ParseExpr();
-  while (curToken_.symbol == L",") {
-    curToken_ = get();
-    ParseExpr();
   }
 }
 
@@ -362,10 +357,18 @@ void Parser::ParseLogAnd() {
 
 void Parser::ParseBitOr() {
 
-  ParseBitAnd();
+  ParseBitXor();
   if (curToken_.symbol == L"|") {
     curToken_ = get();
     ParseBitOr();
+  }
+}
+
+void Parser::ParseBitXor() {
+  ParseBitAnd();
+  if (curToken_.symbol == L"^" || curToken_.symbol == L"xor") {
+    curToken_ = get();
+    ParseBitXor();
   }
 }
 
@@ -390,7 +393,7 @@ void Parser::ParseCompeq() {
 void Parser::ParseCompcomp() {
 
   ParseShift();
-  if (curToken_.symbol == L">=" || curToken_.symbol == L"=<" ||
+  if (curToken_.symbol == L">=" || curToken_.symbol == L"<=" ||
       curToken_.symbol == L">" || curToken_.symbol == L"<") {
     curToken_ = get();
     ParseCompcomp();
@@ -477,7 +480,7 @@ void Parser::ParseGensec() {
       shouldLeave = false;
       curToken_ = get();
       if (curToken_.symbol != L")") {
-        ParseExprList();
+        ParseExpr();
       }
       // bruh
       if (curToken_.symbol != L")") {
@@ -489,7 +492,7 @@ void Parser::ParseGensec() {
       // indexing
       shouldLeave = false;
       curToken_ = get();
-      ParseExprList();
+      ParseExpr();
       if (curToken_.symbol != L"]") {
         ThrowException("Expected closing rect bracket");
       }
@@ -522,7 +525,7 @@ void Parser::ParseNestedNamespace() {
     curToken_ = get();
   }
   // we left, its variable
-  curToken_ = get();
+  
 }
 
 void Parser::ParseOperand() {
@@ -643,6 +646,7 @@ void Parser::ParseFor() {
   if (curToken_.symbol != L")") {
     ThrowException("Expected closing bracket");
   }
+  curToken_ = get();
 
   ParseBody();
   if (curToken_.symbol == L"else") {

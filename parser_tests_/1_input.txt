@@ -1,0 +1,15 @@
+# Type of lexems
+# 1 - reserved
+# 2 - identifier
+# 3 - constant
+# 4 - operator
+# 5 - punctuation
+# 6 - shit
+
+
+#Input:
+func main() : int32
+{
+	print("Hello World");
+	return 0;
+}
