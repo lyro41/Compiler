@@ -6,16 +6,11 @@
 # 5 - punctuation
 # 6 - literal constant
 
-
 #Input:
 func main(void) : void {
-	let Pi = 3.14;
-	let Eps = 1e-2;
-	let Loser = "Loser";
-	let Win = "LoL";
-	if (Pi - Eps <= 22 / 7 and Pi + Eps >= 22 / 7) # && ~ and
-		print(Loser);
-	else {
-		print(Win); # pizdec
-	}
+
+	int[] array_of_struct;
+	int[][,] jagged_array_of_arrays;
+	int[,,] threed_array_of_struct;
+	int[,] twod_array_of_struct;
 }

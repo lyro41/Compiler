@@ -1,6 +1,12 @@
-﻿<Program> ::= <Preprocessor> { <Function> }
+﻿<Program> ::= <Preprocessor> { <Global Statement> }
 
-<Preprocessor> ::= { import <Literal Const> }
+<Preprocessor> ::= { import <Literal Constant> }
+
+<Global Statement> ::= <Function> | <Var Definitions>; | <Namespace Definition> | <Struct Definition>
+
+<Namespace Definition> ::= namespace <Identifier> '{' {<Global Statement>} '}'
+
+<Struct Definition> ::= struct <Identifier> '{' {<Global Statement>}  '}' [<Vars> | eps];
 
 <Function> ::= func <Identifier> ([<Arguments> | eps | void]) : <Concrete Type> [<Func Body> | ;]
 
@@ -8,7 +14,7 @@
 
 <Const Type> ::= const <Concrete Type>
 
-<Concrete Type> ::= <Identifier> {@}
+<Concrete Type> ::= <Identifier> {@} {'['{,}']'}
 
 <Arguments> ::= <Type> <Identifier> | <Type> <Identifier> , <Arguments>
 
@@ -47,9 +53,9 @@
 
 <Power> ::= <Unary> ** <Power> | <Unary>
 
-<Unary> ::= [++ | -- | ~ | ! | not | - | + | @ | ?] <Unary> | <GenSec>
+<Unary> ::= [++ | -- | ~ | ! | not | - | + | @ | ? | delete] <Unary> | new <Type Instance> | <GenSec>
 
-<GenSec> ::= <Namespace> [++ | -- | '(' [<Expr> | eps] ')' | '[' <Expr> ']'] | cast '<' <Type> '>' '(' <Expr> ')' | <Namespace>
+<GenSec> ::= <Namespace> [++ | -- | '(' [<Assignment Expr> {, <Assignment Expr>} | eps] ')' | '[' <Assignment Expr> {, <Assignment Expr>} ']' | .<Attribute>] | cast '<' <Type> '>' '(' <Expr> ')' | <Namespace>
 
 <Namespace> ::= $ <Identifier> | <Identifier> $ <Nested Namespace> | <Operand>
 <Nested Namespace> ::= <Identifier> | <Identifier> $ <Nested Namespace>
@@ -58,17 +64,20 @@
 
 <Assignment Operator> ::= = | <<= | >>= | += | ->= | -= | *= | **= | /= | //= | ^= | &= | |= | %=
 
+<Attribute> ::= <Identifier> [ '(' [<Expr> | eps] ')' | '[' <Expr> ']' | .<Attribute> | eps];
 
 <if> ::= if ( <Expr> ) <Body> [else <Body> | eps]
 
-<switch> ::= switch ( <Expr> ) '{' {case <Expr>: { <Statement> } [default: { <Statement> } | eps] '}'
+<switch> ::= switch ( <Expr> ) '{' {case <Expr>: { [<Statement> | eps] } [default: { [<Statement> | eps] } | eps] '}'
  
 <while> ::= while ( <Expr> ) <Body> [else <Body> | eps]
 
-<for> ::= for ( [<Expr> | <Variable Definitions> | eps]; [<Expr> | eps]; [<Expr> | eps] ) <Body> [else <Body> | eps]
+<for> ::= for ( [<Expr> | <Var Definitions> | eps]; [<Expr> | eps]; [<Expr> | eps] ) <Body> [else <Body> | eps]
 
 <do while> ::= do <Body> while ( <Expr> )
 
 <goto> ::= [goto <Identifier> | break | continue | <return>]
 
 <return> ::= return [<Expr> | eps]
+
+<Type Instance> ::= <Identifier> {@} {'[' [<Assignment Expr> {, <Assignment Expr>} | eps] ']'} 

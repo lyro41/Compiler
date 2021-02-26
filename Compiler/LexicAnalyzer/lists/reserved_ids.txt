@@ -17,14 +17,6 @@ default
 new
 delete
 import
-int8
-int16
-int32
-int64
-unsigned
-double
-float
-char
 let
 const
 var
@@ -33,5 +25,7 @@ and
 or
 not
 func
+namespace
+struct
 NIL
 NULL

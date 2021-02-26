@@ -1,0 +1,11 @@
+struct class_gavna
+{
+	int a = 5;
+	float b = 5;
+};
+
+func main() : void
+{
+	class_gavna g = 4;
+	++g.a;
+}

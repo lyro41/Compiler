@@ -16,14 +16,19 @@ class Parser
     Token curToken_;
     LexicAnalyzer* analyzer_;
     Token get();
+    std::set<std::wstring> type_set_;
     bool IsType(Token token);
     bool IsAssignmentOperator(Token token);
     bool IsPrefixUnaryOperator(Token token);
     bool IsPostfixUnaryOperator(Token token);
     void ThrowException(std::string message);
+    void AddType(std::wstring token_sym);
     #pragma region PARSE_METHODS
     void ParseProgram();
     void ParsePreprocessor();
+    void ParseGlobalStatement();
+    void ParseNamespaceDefinition();
+    void ParseStructDefinition();
     void ParseFunction();
     void ParseType();
     void ParseConcreteType();
@@ -57,6 +62,7 @@ class Parser
     void ParseNamespace();
     void ParseNestedNamespace();
     void ParseOperand();
+    void ParseAttribute();
     void ParseIf();
     void ParseSwitch();
     void ParseWhile();
@@ -64,6 +70,7 @@ class Parser
     void ParseDowhile();
     void ParseGoto();
     void ParseReturn();
+    void ParseTypeInstance();
     #pragma endregion 
 };
 

@@ -1,22 +1,22 @@
 #include "Parser.h"
 
-Parser::Parser(LexicAnalyzer* analyzer) : analyzer_(analyzer) {}
+Parser::Parser(LexicAnalyzer* analyzer) : analyzer_(analyzer) {
+  type_set_.insert(L"int");
+  type_set_.insert(L"float");
+  type_set_.insert(L"double");
+  type_set_.insert(L"char");
+  type_set_.insert(L"string");
+  type_set_.insert(L"let");
+}
 
 void Parser::Parse() {ParseProgram();}
 
 Token Parser::get() { 
-  if (analyzer_->HasNextToken()) {
-    return analyzer_->GetToken();
-  } else {
-    throw std::runtime_error("Unexpected end of tokens");
-  }
+  return analyzer_->GetToken();
 }
 
 bool Parser::IsType(Token token) {
-  return   token.symbol == L"int"
-        || token.symbol == L"float"
-        || token.symbol == L"string"
-        || token.symbol == L"let";
+  return type_set_.find(token.symbol) != type_set_.end();
 }
 
 bool Parser::IsAssignmentOperator(Token token) {
@@ -44,7 +44,9 @@ bool Parser::IsPrefixUnaryOperator(Token token) {
          token.symbol == L"+" ||
          token.symbol == L"-" ||
          token.symbol == L"@" ||
-         token.symbol == L"?";
+         token.symbol == L"?" ||
+         token.symbol == L"delete" ||
+         token.symbol == L"new";
 }
 
 bool Parser::IsPostfixUnaryOperator(Token token) {
@@ -53,16 +55,28 @@ bool Parser::IsPostfixUnaryOperator(Token token) {
 
 void Parser::ThrowException(std::string message) {
   // to do
-  std::cout << analyzer_->GetCursorPosition().first << 
-            " " << analyzer_->GetCursorPosition().second << "\n";
-  throw std::runtime_error(message.c_str());
+  std::string msg;
+  msg.append(std::to_string(analyzer_->GetCursorPosition().first));
+  msg.append(" ");
+  msg.append(std::to_string(analyzer_->GetCursorPosition().second));
+  msg.append("\n");
+  msg.append(message);
+  std::cout << msg << "\n";
+  throw std::runtime_error(msg);
+}
+
+void Parser::AddType(std::wstring token_sym) {
+  if (type_set_.find(token_sym) != type_set_.end()) {
+    ThrowException("Struct redefinition");
+  }
+  type_set_.insert(token_sym);
 }
 
 void Parser::ParseProgram() { 
   curToken_ = get();
   ParsePreprocessor();
-  ParseFunction();
-  if (analyzer_->HasNextToken()) {
+  ParseGlobalStatement();
+  if (curToken_.type != Token::Type::ENDOFFILE) {
     ThrowException("Unexpected token");
   }
 }
@@ -77,41 +91,134 @@ void Parser::ParsePreprocessor() {
   }
 }
 
-void Parser::ParseFunction() {  
-  while (curToken_.symbol == L"func") {
-    curToken_ = get();
-    if (curToken_.type != Token::Type::IDENTIFIER) {
-      if (curToken_.type == Token::Type::RESERVED) {
-        ThrowException("Misuse of reserved word");
-      } else {
-        ThrowException("Identifier expected");
+void Parser::ParseGlobalStatement() {
+  bool shouldLeave = false;
+  while (!shouldLeave) {
+    shouldLeave = true;
+    if (curToken_.symbol == L"func") {
+      ParseFunction();
+      shouldLeave = false;
+    }
+    if (curToken_.symbol == L"namespace") {
+      ParseNamespaceDefinition();
+      shouldLeave = false;
+    }
+    if (curToken_.symbol == L"struct") {
+      ParseStructDefinition();
+      shouldLeave = false;
+    }
+    if (curToken_.type == Token::Type::IDENTIFIER) {
+      ParseVarDefs();
+      if (curToken_.symbol != L";") {
+        ThrowException("Expected ;");
       }
+      curToken_ = get();
+      shouldLeave = false;
     }
+  }
+}
 
-    curToken_ = get();
-    if (curToken_.symbol != L"(") {
-      ThrowException("Expected opening brackets");
+void Parser::ParseNamespaceDefinition() {
+  // we already have namespace
+  curToken_ = get();
+  if (curToken_.type != Token::Type::IDENTIFIER) {
+    ThrowException("Expected identifier");
+  }
+  curToken_ = get();
+  if (curToken_.symbol != L"{") {
+    ThrowException("Expected curly opening bracket");
+  }
+  curToken_ = get();
+  ParseGlobalStatement();
+  if (curToken_.symbol != L"}") {
+    ThrowException("Expected curly closing bracket");
+  }
+  curToken_ = get();
+}
+
+void Parser::ParseStructDefinition() {
+  // we already have struct
+  curToken_ = get();
+  if (curToken_.type != Token::Type::IDENTIFIER) {
+    ThrowException("Expected identifier");
+  }
+  AddType(curToken_.symbol);
+  curToken_ = get();
+  if (curToken_.symbol != L"{") {
+    ThrowException("Expected curly opening bracket");
+  }
+  curToken_ = get();
+  //ParseGlobalStatement();
+  bool shouldLeave = false;
+  while (!shouldLeave) {
+    shouldLeave = true;
+    if (curToken_.symbol == L"func") {
+      ParseFunction();
+      shouldLeave = false;
     }
-
-    curToken_ = get();
-    ParseArguments();
-
-    if (curToken_.symbol != L")") {
-      ThrowException("Expected closing brackets");
+    if (curToken_.symbol == L"namespace") {
+      ParseNamespaceDefinition();
+      shouldLeave = false;
     }
-
-    curToken_ = get();
-    if (curToken_.symbol != L":") {
-      ThrowException("Expected ':'");
+    if (curToken_.symbol == L"struct") {
+      ParseStructDefinition();
+      shouldLeave = false;
     }
-
-    curToken_ = get();
-    ParseConcreteType();
-    if (curToken_.symbol != L";") {
-      // If it`s not forward declaration
-      ParseFuncbody();
+    if (curToken_.type == Token::Type::IDENTIFIER) {
+      ParseVarDefs();
+      if (curToken_.symbol != L";") {
+        ThrowException("Expected ;");
+      }
+      curToken_ = get();
+      shouldLeave = false;
     }
-    // else go find another function
+  }
+  if (curToken_.symbol != L"}") {
+    ThrowException("Expected curly closing bracket");
+  }
+  curToken_ = get();
+  if (curToken_.symbol != L";") {
+    ParseVars();
+  }
+  if (curToken_.symbol != L";") {
+    ThrowException("Expected ;");
+  }
+  curToken_ = get();
+}
+
+void Parser::ParseFunction() {  
+  // we already have func
+  curToken_ = get();
+  if (curToken_.type != Token::Type::IDENTIFIER) {
+    if (curToken_.type == Token::Type::RESERVED) {
+      ThrowException("Misuse of reserved word");
+    } else {
+      ThrowException("Identifier expected");
+    }
+  }
+
+  curToken_ = get();
+  if (curToken_.symbol != L"(") {
+    ThrowException("Expected opening brackets");
+  }
+
+  curToken_ = get();
+  ParseArguments();
+
+  if (curToken_.symbol != L")") {
+    ThrowException("Expected closing brackets");
+  }
+
+  curToken_ = get();
+  if (curToken_.symbol != L":") {
+    ThrowException("Expected ':'");
+  }
+
+  curToken_ = get();
+  ParseConcreteType();
+  if (curToken_.symbol != L";") {
+    // If it`s not forward declaration
+    ParseFuncbody();
   }
 }
 
@@ -130,7 +237,17 @@ void Parser::ParseConcreteType() {
   }
   curToken_ = get();
   while (curToken_.symbol == L"@") {
-    curToken_ = get();  
+    curToken_ = get();
+  }
+  while (curToken_.symbol == L"[") {
+    curToken_ = get();
+    while (curToken_.symbol == L",") {
+      curToken_ = get();
+    }
+    if (curToken_.symbol != L"]") {
+      ThrowException("Expected closing rect closing bracket");
+    }
+    curToken_ = get();
   }
 }
 
@@ -173,6 +290,11 @@ void Parser::ParseArguments() {
   }
 }
 
+/// <summary>
+/// Parses complex body(func body)
+/// Parses multiple statements
+/// Dependency : Checks }
+/// </summary>
 void Parser::ParseFuncbody() {
   if (curToken_.symbol != L"{") {
     ThrowException("Expected opening curly bracket");
@@ -182,16 +304,18 @@ void Parser::ParseFuncbody() {
   if (curToken_.symbol != L"}") {
     ThrowException("Expected closing curly bracket");
   }
-  // potentionally dangerous!
-  if (analyzer_->HasNextToken()) {
-    curToken_ = get();
-  }
+
+  curToken_ = get();
 }
 
 void Parser::ParseBody() {
 
   if (curToken_.symbol == L"{") {
+
     ParseFuncbody();
+    //if (curToken_.symbol != L"}") {
+    //  ThrowException("Expected closing curly bracket");
+    //}
   } else {
     ParseStatement();
   }
@@ -254,6 +378,9 @@ void Parser::ParseStatement() {
 void Parser::ParseMultipleStatements() {
   // Used only in '{' <Statement> '}'
   while (curToken_.symbol != L"}" ) {
+    if (curToken_.type == Token::Type::ENDOFFILE) {
+      ThrowException("Expected statement or }, got end of file");
+    }
     ParseStatement();
   }
 }
@@ -261,11 +388,10 @@ void Parser::ParseMultipleStatements() {
 void Parser::ParseMultipleStatementsInCase() {
   // Used only in '{' <Statement> '}'
   while (curToken_.symbol != L"}" 
-         || curToken_.symbol != L"case"
-         || curToken_.symbol != L"default") {
+         && curToken_.symbol != L"case"
+         && curToken_.symbol != L"default") {
     ParseStatement();
   }
-  curToken_ = get();
 }
 
 void Parser::ParseVarDefs() {
@@ -437,6 +563,11 @@ void Parser::ParsePower() {
 }
 
 void Parser::ParseUnary() {
+  if (curToken_.symbol == L"new") {
+    curToken_ = get();
+    ParseTypeInstance();
+    return;
+  }
   while (IsPrefixUnaryOperator(curToken_)) {
     curToken_ = get();
   }
@@ -480,7 +611,11 @@ void Parser::ParseGensec() {
       shouldLeave = false;
       curToken_ = get();
       if (curToken_.symbol != L")") {
-        ParseExpr();
+        ParseAssExpr();
+        while (curToken_.symbol == L",") {
+          curToken_ = get();
+          ParseAssExpr();
+        }
       }
       // bruh
       if (curToken_.symbol != L")") {
@@ -492,11 +627,20 @@ void Parser::ParseGensec() {
       // indexing
       shouldLeave = false;
       curToken_ = get();
-      ParseExpr();
+      ParseAssExpr();
+      while (curToken_.symbol == L",") {
+        curToken_ = get();
+        ParseAssExpr();
+      }
       if (curToken_.symbol != L"]") {
         ThrowException("Expected closing rect bracket");
       }
       curToken_ = get();
+    }
+    if (curToken_.symbol == L".") {
+      shouldLeave = false;
+      curToken_ = get();
+      ParseAttribute();
     }
   }
 }
@@ -536,13 +680,63 @@ void Parser::ParseOperand() {
     if (curToken_.symbol != L")") {
       ThrowException("Expected closing brackets");
     }
+    curToken_ = get();
     return;
   }
   if (curToken_.type != Token::Type::LITCONSTANT
-      && curToken_.type != Token::Type::NUMCONSTANT) {
+      && curToken_.type != Token::Type::NUMCONSTANT
+      && curToken_.symbol != L"NULL"
+      && curToken_.symbol != L"NIL") {
     ThrowException("Expected any constant");
   }
   curToken_ = get();
+}
+
+void Parser::ParseAttribute() { 
+  if (curToken_.type != Token::Type::IDENTIFIER) {
+    ThrowException("Expected identifier");
+  }
+  curToken_ = get();
+  bool shouldLeave = false;
+  while (!shouldLeave) {
+    shouldLeave = true;
+    if (curToken_.symbol == L"(") {
+      // calling function
+      shouldLeave = false;
+      curToken_ = get();
+      if (curToken_.symbol != L")") {
+        ParseAssExpr();
+        while (curToken_.symbol == L",") {
+          curToken_ = get();
+          ParseAssExpr();
+        }
+      }
+      // bruh
+      if (curToken_.symbol != L")") {
+        ThrowException("Expected closing bracket");
+      }
+      curToken_ = get();
+    }
+    if (curToken_.symbol == L"[") {
+      // indexing
+      shouldLeave = false;
+      curToken_ = get();
+      ParseAssExpr();
+      while (curToken_.symbol == L",") {
+        curToken_ = get();
+        ParseAssExpr();
+      }
+      if (curToken_.symbol != L"]") {
+        ThrowException("Expected closing rect bracket");
+      }
+      curToken_ = get();
+    }
+    if (curToken_.symbol == L".") {
+      shouldLeave = false;
+      curToken_ = get();
+      ParseAttribute();
+    }
+  }
 }
 
 void Parser::ParseIf() {
@@ -586,9 +780,25 @@ void Parser::ParseSwitch() {
     if (curToken_.symbol != L":") {
       ThrowException("Expected :");
     }
+    curToken_ = get();
+    if (curToken_.symbol == L"case" || curToken_.symbol == L"default" ||
+        curToken_.symbol == L"}") {
+      continue;
+    }
     ParseMultipleStatementsInCase();
   }
-
+  if (curToken_.symbol == L"default") {
+    curToken_ = get();
+    if (curToken_.symbol != L":") {
+      ThrowException("Expected :");
+    }
+    curToken_ = get();
+    ParseMultipleStatementsInCase();
+  }
+  if (curToken_.symbol != L"}") {
+    ThrowException("Expected }");
+  }
+  curToken_ = get();
 }
 
 void Parser::ParseWhile() {
@@ -659,6 +869,10 @@ void Parser::ParseDowhile() {
   // we already have do
   curToken_ = get();
   ParseBody();
+  if (curToken_.symbol != L"while") {
+    ThrowException("Expected while");
+  }
+  curToken_ = get();
   if (curToken_.symbol != L"(") {
     ThrowException("Expected opening brackets");
   }
@@ -698,5 +912,27 @@ void Parser::ParseReturn() {
   curToken_ = get();
   if (curToken_.symbol != L";") {
     ParseExpr();
+  }
+}
+
+void Parser::ParseTypeInstance() {
+  if (curToken_.type != Token::Type::IDENTIFIER) {
+    ThrowException("Expected identifier");
+  }
+  curToken_ = get();
+  while (curToken_.symbol == L"@") {
+    curToken_ = get();
+  }
+  while (curToken_.symbol == L"[") {
+    curToken_ = get();
+    ParseAssExpr();
+    while (curToken_.symbol == L",") {
+      curToken_ = get();
+      ParseAssExpr();
+    }
+    if (curToken_.symbol != L"]") {
+      ThrowException("Expected closing rect closing bracket");
+    }
+    curToken_ = get();
   }
 }

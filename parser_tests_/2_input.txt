@@ -10,7 +10,7 @@ func IDState(LexicAnalyzer @fsm) : void {
 func Execute() : void {
   if (isalnum(Peek()) or Peek() == '_') {
     AddNextCharToBuffer();
-    return;
+    return 6767;
   } 
   if (IsReserved(GetBuffer())) {
     AddBufferToQueue(RESERVED);

@@ -1,0 +1,9 @@
+func main() : void
+{
+	switch(a != b) {
+		case 1:
+		break;
+		case 6:
+		case 8:
+	}
+}

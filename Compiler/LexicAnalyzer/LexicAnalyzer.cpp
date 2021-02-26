@@ -98,13 +98,13 @@ bool LexicAnalyzer::HasNext() {
   return !input_stream_.eof();
 }
 
-bool LexicAnalyzer::HasNextToken() {
-  while (current_token_queue_.empty() &&
-         (HasNext() || !token_buffer_.empty())) {
-    Run();
-  }
-  return !current_token_queue_.empty();
-}
+//bool LexicAnalyzer::HasNextToken() {
+//  while (current_token_queue_.empty() &&
+//         (HasNext() || !token_buffer_.empty())) {
+//    Run();
+//  }
+//  return !current_token_queue_.empty();
+//}
 
 std::pair<size_t, size_t> LexicAnalyzer::GetCursorPosition() {
   return std::make_pair(current_line_, current_character_);
@@ -134,11 +134,16 @@ std::queue<Token> LexicAnalyzer::GetTokens() {
   return current_token_queue_;
 }
 
-Token LexicAnalyzer::GetToken()
-{
+Token LexicAnalyzer::GetToken() {
   while (current_token_queue_.empty() && (HasNext() || !token_buffer_.empty()))
   {
     Run();
+  }
+  if (current_token_queue_.empty()) {
+    Token eof;
+    eof.symbol = L"eof";
+    eof.type = Token::Type::ENDOFFILE;
+    current_token_queue_.push(eof);
   }
   Token poppedToken = current_token_queue_.front();
   current_token_queue_.pop();

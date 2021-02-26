@@ -10,7 +10,8 @@ struct Token {
     NUMCONSTANT,
     LITCONSTANT,
     OPERATOR,
-    PUNCTUATION
+    PUNCTUATION,
+    ENDOFFILE
   };
   std::wstring symbol;
   Type type;

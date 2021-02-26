@@ -1,0 +1,25 @@
+import "IDState.h"
+import "LexicAnalyzer.h"
+
+struct type {
+	namespace private {
+		int a;
+		int b;
+	}	
+	func method() : int {
+		return private$a + private$b;
+	}
+	func method2() : int[,,,] {
+		# return something wild here
+	}
+};
+
+# GAVNOOOOOOOOO
+func Execute() : void {
+	int[] a = new int[1];
+}
+
+func main() : int {
+	
+}
+# OOOOOOOOONVAG

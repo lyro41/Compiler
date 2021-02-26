@@ -61,6 +61,20 @@ namespace ParserUnitTest
     TEST_METHOD(Test3) {
       RunTest(L"3_input.txt", true);
 		}
-    TEST_METHOD(Test4) { RunTest(L"4_input.txt", false); }
+    TEST_METHOD(Test4) {
+      RunTest(L"4_input.txt", false);
+    }
+    TEST_METHOD(Test5) {
+      RunTest(L"5_input.txt", false);
+    } 
+    TEST_METHOD(Test_Switch) {
+      RunTest(L"6_input.txt", false);
+    } 
+    TEST_METHOD(Test_DoWhile) {
+      RunTest(L"7_input.txt", false);
+    }
+    TEST_METHOD(Debug_Case) {
+      RunTest(L"debug.txt", false);
+    }
 	};
 }
