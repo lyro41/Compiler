@@ -16,10 +16,16 @@ struct type {
 
 # GAVNOOOOOOOOO
 func Execute() : void {
+	label pointa;
 	int[] a = new int[1];
+	goto pointa;
 }
 
 func main() : int {
-	
+	if(a = 5)
+		--a;
+	elif (b = 5)
+		--b; 
+	else c = 5;
 }
 # OOOOOOOOONVAG

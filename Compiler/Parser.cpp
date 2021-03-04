@@ -364,8 +364,7 @@ void Parser::ParseStatement() {
     return;
   }
   if (curToken_.symbol == L"{") {
-    curToken_ = get();
-    ParseMultipleStatements();
+    ParseFuncbody();
     return;
   }
   ParseExpr();
@@ -752,10 +751,7 @@ void Parser::ParseIf() {
   }
   curToken_ = get();
   ParseBody();
-  if (curToken_.symbol == L"else") {
-    curToken_ = get();
-    ParseBody();
-  }
+  ParseElseAlternatives();
 }
 
 void Parser::ParseSwitch() {
@@ -901,10 +897,15 @@ void Parser::ParseGoto() {
     curToken_ = get();
     return;
   }
+  if (curToken_.symbol == L"label") {
+    ParseLabelDef();
+    return;
+  }
   if (curToken_.symbol == L"return") {
     ParseReturn();
     return;
   }
+  ThrowException("Unexpected reserved token");
 }
 
 void Parser::ParseReturn() {
@@ -935,4 +936,38 @@ void Parser::ParseTypeInstance() {
     }
     curToken_ = get();
   }
+}
+
+void Parser::ParseLabelDef() {
+  // we already have label
+  curToken_ = get();
+  if (curToken_.type != Token::Type::IDENTIFIER) {
+    ThrowException("Expected identifier");
+  }
+  curToken_ = get();
+}
+
+void Parser::ParseElseAlternatives() {
+  if (curToken_.symbol == L"else") {
+    curToken_ = get();
+    ParseBody();
+    return;
+  }
+  if (curToken_.symbol == L"elif") {
+    curToken_ = get();
+    if (curToken_.symbol != L"(") {
+      ThrowException("Expected opening bracket");
+    }
+    curToken_ = get();
+    ParseExpr();
+    if (curToken_.symbol != L")") {
+      ThrowException("Expected closing bracket");
+    }
+    curToken_ = get();
+    ParseBody();
+    ParseElseAlternatives();
+    return;
+  }
+  // else we are in some kind of garbage, that doesn`t belong to us
+  // get out of here
 }

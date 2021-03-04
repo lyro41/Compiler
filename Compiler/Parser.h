@@ -71,6 +71,8 @@ class Parser
     void ParseGoto();
     void ParseReturn();
     void ParseTypeInstance();
+    void ParseLabelDef();
+    void ParseElseAlternatives();
     #pragma endregion 
 };
 

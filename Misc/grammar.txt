@@ -22,7 +22,7 @@
 
 <Body> ::= <Func Body> | <Statement>
 
-<Statement> ::= <Var Definitions>; | '{' {<Statement>} '}' | <Expr>; | <goto>; | <if> | <switch> | <while> | <for> | <do while>;
+<Statement> ::= <Var Definitions>; | <Func Body> | <Expr>; | <goto>; | <if> | <switch> | <while> | <for> | <do while>;
 
 <Var Definitions> ::= <Type> <Vars>
 <Vars> ::= <Var Definition>, <Vars> | <Var Definition>
@@ -66,7 +66,7 @@
 
 <Attribute> ::= <Identifier> [ '(' [<Expr> | eps] ')' | '[' <Expr> ']' | .<Attribute> | eps];
 
-<if> ::= if ( <Expr> ) <Body> [else <Body> | eps]
+<if> ::= if ( <Expr> ) <Body> <Else Alternatives>
 
 <switch> ::= switch ( <Expr> ) '{' {case <Expr>: { [<Statement> | eps] } [default: { [<Statement> | eps] } | eps] '}'
  
@@ -76,8 +76,12 @@
 
 <do while> ::= do <Body> while ( <Expr> )
 
-<goto> ::= [goto <Identifier> | break | continue | <return>]
+<goto> ::= goto <Identifier> | break | continue | <return> | <Label Definition>
 
 <return> ::= return [<Expr> | eps]
 
 <Type Instance> ::= <Identifier> {@} {'[' [<Assignment Expr> {, <Assignment Expr>} | eps] ']'} 
+
+<Label Definition> ::= label <Identifier>
+
+<Else Alternatives: ::= else <Body> | elif (<Expr>) <Body> <Else Alternatives> | eps
