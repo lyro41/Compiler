@@ -25,5 +25,7 @@ or
 not
 func
 label
-NIL
-NULL
+nil
+null
+true
+false
