@@ -127,8 +127,7 @@ std::queue<Token> LexicAnalyzer::GetTokens() {
 }
 
 Token LexicAnalyzer::GetToken() {
-  while (current_token_queue_.empty() && (HasNext() || !token_buffer_.empty()))
-  {
+  while (current_token_queue_.empty() && (HasNext() || !token_buffer_.empty())) {
     Run();
   }
   if (current_token_queue_.empty()) {
