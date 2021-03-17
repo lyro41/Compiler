@@ -4,7 +4,7 @@
 #include <string>
 
 #include "LexicAnalyzer/LexicAnalyzer.h"
-#include "Parser.h"
+#include "Parser/Parser.h"
 #include "Token.h"
 
 
@@ -52,18 +52,6 @@ int main(int argc, const char* argv[]) {
     std::string file_extension = file_name.substr(file_name_extension_offset);
     file_name = file_name.substr(file_name_offset,
                                  file_name_offset - file_name_extension_offset);
-    /*
-    std::queue<Token> tokens;
-    try {
-      tokens = analyzer->GetTokens(); 
-    } catch (const std::runtime_error& e) {
-      std::cout << "Error accured during lexing\n";
-      std::cout << e.what() << "\n";
-      std::cin.get();
-      return -1;
-    }
-    file_input.close();
-    */
 
     std::wfstream file_output("output_tokens.txt", std::ios::out);
     if (!file_output.is_open()) {

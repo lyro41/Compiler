@@ -14,7 +14,7 @@
 
 <Const Type> ::= const <Concrete Type>
 
-<Concrete Type> ::= <Identifier> {@} {'['{,}']'}
+<Concrete Type> ::= <Identifier> {@} {'['{,}']' {@}} 
 
 <Arguments> ::= <Type> <Identifier> | <Type> <Identifier> , <Arguments>
 
