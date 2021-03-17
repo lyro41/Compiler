@@ -11,10 +11,8 @@
 <Function> ::= func <Identifier> ([<Arguments> | eps | void]) : <Concrete Type> [<Func Body> | ;]
 
 <Type> ::= <Const Type> | <Concrete Type>
-
 <Const Type> ::= const <Concrete Type>
-
-<Concrete Type> ::= <Identifier> {@} {'['{,}']' {@}} 
+<Concrete Type> ::= <Identifier> {@} {'['{,}']'}
 
 <Arguments> ::= <Type> <Identifier> | <Type> <Identifier> , <Arguments>
 
