@@ -2,16 +2,39 @@
 #include "CppUnitTest.h"
 #include "LexicAnalyzer/LexicAnalyzer.h"
 #include "LexicAnalyzer/LexicAnalyzer.cpp"
-#include "LexicAnalyzer\OperatorState.cpp"
-#include "LexicAnalyzer\BeginState.cpp"
-#include "LexicAnalyzer\IDState.cpp"
-#include "LexicAnalyzer\LitConstState.cpp"
-#include "LexicAnalyzer\NumberState.cpp"
+#include "LexicAnalyzer/OperatorState.cpp"
+#include "LexicAnalyzer/BeginState.cpp"
+#include "LexicAnalyzer/IDState.cpp"
+#include "LexicAnalyzer/LitConstState.cpp"
+#include "LexicAnalyzer/NumberState.cpp"
 
 #include "../Compiler/Token.h"
-#include "../Compiler/Parser.h"
-#include "../Compiler/Parser.cpp"
 
+#include "../Compiler/Parser/Parser.h"
+#include "../Compiler/Parser/Parser.cpp"
+
+#include "../Compiler/Semantic/Semantic.h"
+#include "../Compiler/Semantic/Semantic.cpp"
+
+#include "../Compiler/TID.h"
+#include "../Compiler/TID.cpp"
+#include "../Compiler/ITIDEntry.h"
+#include "../Compiler/ITIDEntry.cpp"
+#include "../Compiler/FunctionTIDEntry.h"
+#include "../Compiler/FunctionTIDEntry.cpp"
+#include "../Compiler/NamespaceTIDEntry.h"
+#include "../Compiler/NamespaceTIDEntry.cpp"
+#include "../Compiler/VariableTIDEntry.h"
+#include "../Compiler/VariableTIDEntry.cpp"
+#include "../Compiler/ImportedFileTIDEntry.h"
+#include "../Compiler/ImportedFileTIDEntry.cpp"
+#include "../Compiler/NamedTIDEntry.h"
+#include "../Compiler/NamedTIDEntry.cpp"
+#include "../Compiler/TypeAttribute.h"
+#include "../Compiler/TypeAttribute.cpp"
+
+#include "../Compiler/SemanticException.h"
+#include "../Compiler/SemanticException.cpp"
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace ParserUnitTest {
@@ -29,20 +52,21 @@ namespace ParserUnitTest {
       std::wifstream file_input(cur_path + path);
 
       Assert::IsTrue(file_input.is_open());
-      LexicAnalyzer* analyzer = nullptr;
+      LexicAnalyzer* lexer = nullptr;
       try {
-        analyzer = new LexicAnalyzer(file_input);
+        lexer = new LexicAnalyzer(file_input);
       } catch (const std::runtime_error& e) {
         std::string msg = e.what();
         std::wstring wmsg(msg.begin(), msg.end());
         Assert::IsTrue(shouldThrow, wmsg.c_str());
         return;
       }
-      
-      Parser parser(analyzer);
+      TID global_tid;
+      SemanticAnalyzer semantic(&global_tid);
+      Parser parser(lexer, &semantic);
       try {
         parser.Parse();
-      } catch (std::runtime_error& e) {
+      } catch (std::exception& e) {
         std::string msg = e.what();
         std::wstring wmsg(msg.begin(), msg.end());
         Assert::IsTrue(shouldThrow, wmsg.c_str());
@@ -58,6 +82,7 @@ namespace ParserUnitTest {
     TEST_METHOD(Test5) { RunTest(L"5_input.txt", false); } 
     TEST_METHOD(Test_Switch) { RunTest(L"6_input.txt", false); } 
     TEST_METHOD(Test_DoWhile) { RunTest(L"7_input.txt", false); }
-    TEST_METHOD(Debug_Case) { RunTest(L"debug.txt", false); }
+
+    // TEST_METHOD(Debug_Case) { RunTest(L"debug.txt", false); }
   };
 }

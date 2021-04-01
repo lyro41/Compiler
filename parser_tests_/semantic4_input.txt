@@ -1,0 +1,16 @@
+namespace standard {
+	func wow() : void {
+		int32 variable = 5;
+	}
+	int32 variable = 1;
+}
+
+namespace standard {
+	func anotherwow() : void {
+	
+	}
+}
+
+func main() : int32 { 
+
+}

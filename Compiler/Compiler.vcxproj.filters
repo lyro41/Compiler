@@ -12,10 +12,6 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
-    <Filter Include="LexicAnalyzer\Header Files\Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
     <Filter Include="Parser">
       <UniqueIdentifier>{22696f49-4fee-4c92-8410-df874584dfab}</UniqueIdentifier>
     </Filter>
@@ -28,11 +24,39 @@
     <Filter Include="Shared">
       <UniqueIdentifier>{b2f02eda-1145-45b9-a9ce-4b0e552436fc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Semantic">
+      <UniqueIdentifier>{84c25500-e4ac-4447-a356-899324aef6e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Semantic\Source Files">
+      <UniqueIdentifier>{972793f1-d60b-4d76-8282-314e15cffb87}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Semantic\Header Files">
+      <UniqueIdentifier>{71908345-7262-4da0-a07a-f2401e0aa3d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Semantic\Header Files\TIDEntries">
+      <UniqueIdentifier>{08cb5f17-e892-4ba3-9bc1-f2e59204eba7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Semantic\Source Files\TIDEntries">
+      <UniqueIdentifier>{251a549e-5235-454b-af68-e4211f2f834d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Semantic\Source Files\Attributes">
+      <UniqueIdentifier>{4c24ef4b-1d56-4c3d-ba1b-b1be5a860f49}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Semantic\Header Files\Attributes">
+      <UniqueIdentifier>{45032a75-6bce-447a-a7ad-459c272cbef0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="LexicAnalyzer\Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Semantic\Header Files\Operators">
+      <UniqueIdentifier>{f728d299-769d-4b6e-a6ab-171e308c14c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Semantic\Source Files\Operators">
+      <UniqueIdentifier>{667036ba-c55e-4206-9f24-b7c496e23aaf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Parser.cpp">
-      <Filter>Parser\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="LexicAnalyzer\BeginState.cpp">
       <Filter>LexicAnalyzer\Source Files</Filter>
     </ClCompile>
@@ -57,11 +81,56 @@
     <ClCompile Include="main.cpp">
       <Filter>Shared</Filter>
     </ClCompile>
+    <ClCompile Include="Parser\Parser.cpp">
+      <Filter>Parser\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Semantic\Semantic.cpp">
+      <Filter>Semantic\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TID.cpp">
+      <Filter>Semantic\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ITIDEntry.cpp">
+      <Filter>Semantic\Source Files\TIDEntries</Filter>
+    </ClCompile>
+    <ClCompile Include="Attribute.cpp">
+      <Filter>Semantic\Source Files\Attributes</Filter>
+    </ClCompile>
+    <ClCompile Include="TypeAttribute.cpp">
+      <Filter>Semantic\Source Files\Attributes</Filter>
+    </ClCompile>
+    <ClCompile Include="FunctionTIDEntry.cpp">
+      <Filter>Semantic\Source Files\TIDEntries</Filter>
+    </ClCompile>
+    <ClCompile Include="NamedTIDEntry.cpp">
+      <Filter>Semantic\Source Files\TIDEntries</Filter>
+    </ClCompile>
+    <ClCompile Include="VariableTIDEntry.cpp">
+      <Filter>Semantic\Source Files\TIDEntries</Filter>
+    </ClCompile>
+    <ClCompile Include="ImportedFileTIDEntry.cpp">
+      <Filter>Semantic\Source Files\TIDEntries</Filter>
+    </ClCompile>
+    <ClCompile Include="ArgumentAttribute.cpp">
+      <Filter>Semantic\Source Files\Attributes</Filter>
+    </ClCompile>
+    <ClCompile Include="NamespaceTIDEntry.cpp">
+      <Filter>Semantic\Source Files\TIDEntries</Filter>
+    </ClCompile>
+    <ClCompile Include="JumpAttribute.cpp">
+      <Filter>Semantic\Source Files\Attributes</Filter>
+    </ClCompile>
+    <ClCompile Include="SemanticException.cpp">
+      <Filter>Shared</Filter>
+    </ClCompile>
+    <ClCompile Include="StructTIDEntry.cpp">
+      <Filter>Semantic\Source Files\TIDEntries</Filter>
+    </ClCompile>
+    <ClCompile Include="FunctionAttribute.cpp">
+      <Filter>Semantic\Source Files\Attributes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Parser.h">
-      <Filter>Parser\Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="LexicAnalyzer\BeginState.h">
       <Filter>LexicAnalyzer\Header Files</Filter>
     </ClInclude>
@@ -85,6 +154,54 @@
     </ClInclude>
     <ClInclude Include="Token.h">
       <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="Parser\Parser.h">
+      <Filter>Parser\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Semantic\Semantic.h">
+      <Filter>Semantic\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TID.h">
+      <Filter>Semantic\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ITIDEntry.h">
+      <Filter>Semantic\Header Files\TIDEntries</Filter>
+    </ClInclude>
+    <ClInclude Include="Attribute.h">
+      <Filter>Semantic\Header Files\Attributes</Filter>
+    </ClInclude>
+    <ClInclude Include="TypeAttribute.h">
+      <Filter>Semantic\Header Files\Attributes</Filter>
+    </ClInclude>
+    <ClInclude Include="FunctionTIDEntry.h">
+      <Filter>Semantic\Header Files\TIDEntries</Filter>
+    </ClInclude>
+    <ClInclude Include="NamedTIDEntry.h">
+      <Filter>Semantic\Header Files\TIDEntries</Filter>
+    </ClInclude>
+    <ClInclude Include="VariableTIDEntry.h">
+      <Filter>Semantic\Header Files\TIDEntries</Filter>
+    </ClInclude>
+    <ClInclude Include="ImportedFileTIDEntry.h">
+      <Filter>Semantic\Header Files\TIDEntries</Filter>
+    </ClInclude>
+    <ClInclude Include="ArgumentAttribute.h">
+      <Filter>Semantic\Header Files\Attributes</Filter>
+    </ClInclude>
+    <ClInclude Include="NamespaceTIDEntry.h">
+      <Filter>Semantic\Header Files\TIDEntries</Filter>
+    </ClInclude>
+    <ClInclude Include="JumpAttribute.h">
+      <Filter>Semantic\Header Files\Attributes</Filter>
+    </ClInclude>
+    <ClInclude Include="SemanticException.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="StructTIDEntry.h">
+      <Filter>Semantic\Header Files\TIDEntries</Filter>
+    </ClInclude>
+    <ClInclude Include="FunctionAttribute.h">
+      <Filter>Semantic\Header Files\Attributes</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

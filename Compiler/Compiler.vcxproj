@@ -165,6 +165,12 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ArgumentAttribute.cpp" />
+    <ClCompile Include="Attribute.cpp" />
+    <ClCompile Include="FunctionAttribute.cpp" />
+    <ClCompile Include="FunctionTIDEntry.cpp" />
+    <ClCompile Include="ImportedFileTIDEntry.cpp" />
+    <ClCompile Include="JumpAttribute.cpp" />
     <ClCompile Include="LexicAnalyzer\BeginState.cpp" />
     <ClCompile Include="LexicAnalyzer\IDState.cpp" />
     <ClCompile Include="LexicAnalyzer\IState.cpp" />
@@ -173,9 +179,24 @@
     <ClCompile Include="LexicAnalyzer\NumberState.cpp" />
     <ClCompile Include="LexicAnalyzer\OperatorState.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Parser.cpp" />
+    <ClCompile Include="NamedTIDEntry.cpp" />
+    <ClCompile Include="NamespaceTIDEntry.cpp" />
+    <ClCompile Include="Parser\Parser.cpp" />
+    <ClCompile Include="SemanticException.cpp" />
+    <ClCompile Include="Semantic\Semantic.cpp" />
+    <ClCompile Include="StructTIDEntry.cpp" />
+    <ClCompile Include="TID.cpp" />
+    <ClCompile Include="ITIDEntry.cpp" />
+    <ClCompile Include="TypeAttribute.cpp" />
+    <ClCompile Include="VariableTIDEntry.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ArgumentAttribute.h" />
+    <ClInclude Include="Attribute.h" />
+    <ClInclude Include="FunctionAttribute.h" />
+    <ClInclude Include="FunctionTIDEntry.h" />
+    <ClInclude Include="ImportedFileTIDEntry.h" />
+    <ClInclude Include="JumpAttribute.h" />
     <ClInclude Include="LexicAnalyzer\BeginState.h" />
     <ClInclude Include="LexicAnalyzer\IDState.h" />
     <ClInclude Include="LexicAnalyzer\IState.h" />
@@ -183,8 +204,17 @@
     <ClInclude Include="LexicAnalyzer\LitConstState.h" />
     <ClInclude Include="LexicAnalyzer\NumberState.h" />
     <ClInclude Include="LexicAnalyzer\OperatorState.h" />
-    <ClInclude Include="Parser.h" />
+    <ClInclude Include="NamedTIDEntry.h" />
+    <ClInclude Include="NamespaceTIDEntry.h" />
+    <ClInclude Include="Parser\Parser.h" />
+    <ClInclude Include="SemanticException.h" />
+    <ClInclude Include="Semantic\Semantic.h" />
+    <ClInclude Include="StructTIDEntry.h" />
+    <ClInclude Include="TID.h" />
+    <ClInclude Include="ITIDEntry.h" />
     <ClInclude Include="Token.h" />
+    <ClInclude Include="TypeAttribute.h" />
+    <ClInclude Include="VariableTIDEntry.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

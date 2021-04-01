@@ -1,0 +1,7 @@
+
+
+func main() : int32 { 
+	int32 variable = 1;
+	
+	float variable = 4;
+}

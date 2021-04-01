@@ -9,10 +9,10 @@
 
 #Input:
 func main(void) : void {
-	let Pi = 3.14;
-	let Eps = 1e-2;
-	let Loser = "Loser";
-	let Win = "LoL";
+	double Pi = 3.14;
+	double Eps = 1e-2;
+	const char@ Loser = "Loser";
+	const char@ Win = "LoL";
 	if (Pi - Eps <= 22 / 7 and Pi + Eps >= 22 / 7) # && ~ and
 		print(Loser);
 	else {

@@ -1,0 +1,4 @@
+
+func lol(int32 b) : void {
+	int32 a = 0;
+}

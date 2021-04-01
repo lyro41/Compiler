@@ -1,0 +1,14 @@
+func lol(int32 a, int32 b) : int32 {
+	return 0;
+}
+
+func lol(int32 a, int64 b) : int32 {
+	return 0;
+}
+
+
+func main() : int32 {
+	int32 lolerarg = 12;
+	float ll = 1.5;
+	int32 f = lol(lolerarg, ll);
+}

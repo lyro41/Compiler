@@ -1,0 +1,16 @@
+namespace standard {
+	namespace private {
+		int32 variable = 5;
+	}
+	namespace public {
+		int32 variable = 5;
+	}
+}
+
+int32 variable = 5;
+
+func main() : int32 { 
+	int32 variable = 5;
+	$variable = 1 + standard$public$variable;
+	
+}

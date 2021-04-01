@@ -1,6 +1,6 @@
 struct class_gavna
 {
-	int a = 5;
+	int32 a = 5;
 	float b = 5;
 };
 

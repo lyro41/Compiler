@@ -1,0 +1,115 @@
+Here go actions:
+/Is Number Int/
+/Is Number Float/
+/Does Number fit in Int/
+/Does Number fit in Float/
+
+/Check Type Existence/ - searches for same type, if it exists throws exception 
+/Check Function Overload/ - searches for function with same name and arguments, if it exists, it throws exception
+/Local TID Search/ - search for name in current TID, if name exists, throws exception, else not
+/Deep TID Search/ - search for name in current and higher TID(s), if name exists, throws exception, else not
+/Push In TID/(/TID entry/) - pushes TID entry in current TID, if name exists, throws exception, else not
+
+/Push Attribute/(/Attribute/) - pushes defined attributed in stack
+/Check Type From Stack Top/
+/Pop Attribute/ - pops and return attribute at top of stack
+
+/Check Types Compat/(/Attribute/, /Attribute/) - checks in table compatibility and puts result in stack, otherwise throws.
+
+/Check func Arguments Count/ -  / they put back arguments as they were in stack previously
+/Check func Arguments Type/ -   /
+
+/Try to Parse File/ - pops stack and runs parser on file. If file is not found or parser failed to parse, certain exception will be thrown
+
+/Create New TID/ - returns TID new object 
+
+/Delete Current TID/
+
+<Program> ::= <Preprocessor> { <Global Statement> }
+
+<Preprocessor> ::= { import <Literal Constant> /Push Attribute(StringAttribute(<Literal Constant>)/ /Try to Parse File/ }
+
+<Global Statement> ::= <Function> | <Var Definitions>; | <Namespace Definition> | <Struct Definition>
+
+<Namespace Definition> ::= namespace <Identifier> '{' {<Global Statement>} '}'
+
+<Struct Definition> ::= struct <Identifier> /Check Type Existence, if not Push/ '{' {<Global Statement>}  '}' [<Vars> | eps];
+
+<Function> ::= func <Identifier> ([<Arguments> | eps | void]) /Check Function Overload/ : <Concrete Type>  [<Func Body> | ;] 
+
+<Type> ::= <Const Type> | <Concrete Type>
+
+<Const Type> ::= const <Concrete Type>
+
+<Concrete Type> ::= <Identifier> {@} {'['{,}']'} {@}
+
+-- we are here from <Function>
+<Arguments> ::= <Type> <Identifier> /Push Attribute(TypeAttribute)/ | <Type> <Identifier> /Push Attribute(TypeAttribute)/, <Arguments>
+
+<Func Body> ::= '{' {<Statement>} '}'
+
+<Body> ::= <Func Body> | <Statement>
+
+<Statement> ::= <Var Definitions>; | /Create New TID, Parent to Cur, Select/ <Func Body> | <Expr>; | <goto>; | <if> | <switch> | <while> | <for> | <do while>;
+
+<Var Definitions> ::= <Type> /Push Attribute(TypeAttribute)/  <Vars>
+<Vars> ::= <Var Definition>, <Vars> | <Var Definition>
+<Var Definition> ::= <Identifier> /Push In TID(/TIDEntry/)/ | <Identifier> /Push In TID(/TIDEntry/)/ /Push Attribute(/Type/)/ = <Expr> /Check Type From Stack Top/
+
+<Expr> ::= <Assignment Expr> | <Assignment Expr> , <Expr>
+<Assignment Expr> ::= <Logical Implication> <Assignment Operator> <Init Expr> | <Logical Implication>
+<Init Expr> ::= <Assignment Expr> | <Init List>
+<Init List> ::= '{' <Init List Seq> '}'
+<Init List Seq> ::= <Assignment Expr> | <Assignment Expr> , <Init List Seq>
+
+<Logical Implication> ::= <Logical Or> -> <Logical Implication> | <Logical Or>
+<Logical Or> ::= <Logical And> ['||' | or] <Logical Or> | <Logical And>
+<Logical And> ::= <Bitwise Or> [&& | and] <Logical And> | <Bitwise Or>
+
+<Bitwise Or> ::= <Bitwise Xor> '|' <Bitwise And> | <Bitwise Xor>
+<Bitwise Xor> ::= <Bitwise And> [^ | xor] <Bitwise Xor> | <Bitwise And>
+<Bitwise And> ::= <Comparison Equality> & <Bitwise And> | <Comparison Equality>
+
+<Comparison Equality> ::= <Comparison Comparison> [== | !=] <Comparison Equality> | <Comparison Comparison>
+<Comparison Comparison> ::= <Shift> [> | >= | < | <=] <Comparison Comparison> | <Shift>
+
+<Shift> ::= <Sumsub> [>> | <<] <Shift> | <Sumsub>
+
+<Sumsub> ::= <Muldiv> [+ | -] <Sumsub> | <Muldiv>
+
+<Muldiv> ::= <Power> [/ | // | * || %] <Muldiv> | <Power>
+
+<Power> ::= <Unary> ** <Power> | <Unary>
+
+<Unary> ::= [++ | -- | ~ | ! | not | - | + | @ | ? | delete] <Unary> | new <Type Instance> | <GenSec>
+
+<GenSec> ::= <Namespace> [++ | -- | '(' [<Assignment Expr> {, <Assignment Expr>} | eps] ')' | '[' <Assignment Expr> {, <Assignment Expr>} ']' | .<Attribute>] | cast '<' <Type> '>' '(' <Expr> ')' | <Namespace>
+
+<Namespace> ::= $ <Identifier> | <Identifier> $ <Nested Namespace> | <Operand>
+<Nested Namespace> ::= <Identifier> | <Identifier> $ <Nested Namespace>
+
+<Operand> ::= ( <Expr> ) | <Identifier>  | <Numeric Constant> | <Literal Constant>
+
+<Assignment Operator> ::= = | <<= | >>= | += | ->= | -= | *= | **= | /= | //= | ^= | &= | |= | %=
+
+<Attribute> ::= <Identifier> [ '(' [<Expr> | eps] ')' | '[' <Expr> ']' | .<Attribute> | eps];
+
+<if> ::= if ( <Expr> ) <Body> <Else Alternatives>
+
+<switch> ::= switch ( <Expr> ) '{' {case <Expr>: { [<Statement> | eps] } [default: { [<Statement> | eps] } | eps] '}'
+ 
+<while> ::= while ( <Expr> ) <Body> [else <Body> | eps]
+
+<for> ::= for ( [<Expr> | <Var Definitions> | eps]; [<Expr> | eps]; [<Expr> | eps] ) <Body> [else <Body> | eps]
+
+<do while> ::= do <Body> while ( <Expr> )
+
+<goto> ::= goto <Identifier> | break | continue | <return> | <Label Definition>
+
+<return> ::= return [<Expr> | eps]
+
+<Type Instance> ::= <Identifier> {@} {'[' [<Assignment Expr> {, <Assignment Expr>} | eps] ']'} 
+
+<Label Definition> ::= label <Identifier>
+
+<Else Alternatives: ::= else <Body> | elif (<Expr>) <Body> <Else Alternatives> | eps

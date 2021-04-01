@@ -7,7 +7,6 @@
 #include "Parser/Parser.h"
 #include "Token.h"
 
-
 int main(int argc, const char* argv[]) {
   #ifdef _ONLYTOKEN
     //argc = 2;
@@ -85,17 +84,18 @@ int main(int argc, const char* argv[]) {
       return -1;
     }
 
-    LexicAnalyzer* analyzer;
+    LexicAnalyzer* lexer;
     try {
-      analyzer = new LexicAnalyzer(file_input);
+      lexer = new LexicAnalyzer(file_input);
     } catch (const std::runtime_error& e) {
       std::cout << "Error accured during initialization of lexic analyzer\n";
       std::cout << e.what() << "\n";
       std::cin.get();
       return -1;
     }
-
-    Parser parser(analyzer);
+    SemanticAnalyzer* semantic;
+    semantic = new SemanticAnalyzer(new TID());
+    Parser parser(lexer, semantic);
     try {
       parser.Parse();
     } catch (std::runtime_error& e) {
