@@ -20,8 +20,9 @@ bool StructTIDEntry::ShouldPush(ITIDEntry* entry) {
 }
 
 void StructTIDEntry::SetCurrentTID(TID* _tid) {
-  tid_ = _tid;
-}
+  tid_ = _tid; }
+
+TID* StructTIDEntry::GetCurrentTID() { return tid_; }
 
 StructTIDEntry::~StructTIDEntry() {
   delete tid_;

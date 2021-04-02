@@ -7,6 +7,7 @@ class StructTIDEntry : public NamedTIDEntry {
   StructTIDEntry();
   virtual bool ShouldPush(ITIDEntry* entry) override;
   void SetCurrentTID(TID* _tid);
+  TID* GetCurrentTID();
   ~StructTIDEntry();
   private:
   TID* tid_;

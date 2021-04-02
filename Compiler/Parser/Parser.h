@@ -10,6 +10,7 @@
 #include "ArgumentAttribute.h"
 #include "FunctionAttribute.h"
 #include "JumpAttribute.h"
+#include "StructAttribute.h"
 #include <Semantic/Semantic.h>
 #include <LexicAnalyzer/LexicAnalyzer.h>
 
@@ -35,6 +36,7 @@ class Parser
   SemanticAnalyzer* semantic_;
   Token get();
   std::map<std::wstring, int> type_map;
+
   bool IsType(Token token);
   void CheckType(std::wstring lhs, std::wstring rhs);
   TypeAttribute* CastToHighest(std::wstring lhs, std::wstring rhs);
@@ -43,6 +45,10 @@ class Parser
   void CheckInts(std::wstring lhs, std::wstring rhs);
   void CheckInt(std::wstring lhs);
   void CheckIntegral(std::wstring lhs);
+  bool DoTypesMatch(std::wstring lhs, std::wstring rhs);
+  bool IsIntegerType(std::wstring type);
+  void DeclareJumpableConstruction();
+
   bool IsAssignmentOperator(Token token);
   bool IsPrefixUnaryOperator(Token token);
   bool IsPostfixUnaryOperator(Token token);

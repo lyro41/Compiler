@@ -32,6 +32,8 @@
 #include "../Compiler/NamedTIDEntry.cpp"
 #include "../Compiler/TypeAttribute.h"
 #include "../Compiler/TypeAttribute.cpp"
+#include "../Compiler/JumpAttribute.h"
+#include "../Compiler/JumpAttribute.cpp"
 
 #include "../Compiler/SemanticException.h"
 #include "../Compiler/SemanticException.cpp"

@@ -184,6 +184,7 @@
     <ClCompile Include="Parser\Parser.cpp" />
     <ClCompile Include="SemanticException.cpp" />
     <ClCompile Include="Semantic\Semantic.cpp" />
+    <ClCompile Include="StructAttribute.cpp" />
     <ClCompile Include="StructTIDEntry.cpp" />
     <ClCompile Include="TID.cpp" />
     <ClCompile Include="ITIDEntry.cpp" />
@@ -209,6 +210,7 @@
     <ClInclude Include="Parser\Parser.h" />
     <ClInclude Include="SemanticException.h" />
     <ClInclude Include="Semantic\Semantic.h" />
+    <ClInclude Include="StructAttribute.h" />
     <ClInclude Include="StructTIDEntry.h" />
     <ClInclude Include="TID.h" />
     <ClInclude Include="ITIDEntry.h" />

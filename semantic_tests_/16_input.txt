@@ -1,0 +1,7 @@
+func wow() : void {
+	for(;;) {
+		if(true) {
+		break;
+		}	
+	}
+}

@@ -97,3 +97,9 @@ void SemanticAnalyzer::ChangeCurrentTID(TID* target) {
 TID* SemanticAnalyzer::GetCurrentTID() { return current_; }
 
 TID* SemanticAnalyzer::GetGlobalTID() { return global_; }
+
+void SemanticAnalyzer::CheckPrototypes() {
+  for (auto& func : called_prototypes ) {
+    if (func->is_proto) throw SemanticException((L"Unable to find implementation of prototype "  + func->name));
+  }
+}

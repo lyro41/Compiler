@@ -29,3 +29,5 @@ nil
 null
 true
 false
+NIL
+NULL

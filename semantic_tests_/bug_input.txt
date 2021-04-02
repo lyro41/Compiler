@@ -1,0 +1,15 @@
+
+func wow(int32 lol, int32 kek, int32 hui) : void {
+
+}
+
+
+func wow(float i, int32 kek) : void {
+
+}
+
+
+
+func main() : int32 {
+	wow(2,4,1,1,1,1);
+}

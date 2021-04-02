@@ -1,0 +1,9 @@
+func wow() : void;
+
+func lol() : void {
+	wow();
+}
+
+func wow() : void {
+	lol();
+}

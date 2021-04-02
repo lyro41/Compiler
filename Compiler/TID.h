@@ -10,6 +10,8 @@ class TID {
   bool DeepTIDSearch(ITIDEntry* entry);
   void PushInTID(ITIDEntry* entry);
   ITIDEntry* FindByName(std::wstring name);
+  template<typename T>
+  T* FindByName(std::wstring name);
   std::vector<ITIDEntry*> FindAllByName(std::wstring name);
   /// <summary>
   /// This kills current TID

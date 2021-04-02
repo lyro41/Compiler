@@ -129,6 +129,9 @@
     <ClCompile Include="FunctionAttribute.cpp">
       <Filter>Semantic\Source Files\Attributes</Filter>
     </ClCompile>
+    <ClCompile Include="StructAttribute.cpp">
+      <Filter>Semantic\Source Files\Attributes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LexicAnalyzer\BeginState.h">
@@ -201,6 +204,9 @@
       <Filter>Semantic\Header Files\TIDEntries</Filter>
     </ClInclude>
     <ClInclude Include="FunctionAttribute.h">
+      <Filter>Semantic\Header Files\Attributes</Filter>
+    </ClInclude>
+    <ClInclude Include="StructAttribute.h">
       <Filter>Semantic\Header Files\Attributes</Filter>
     </ClInclude>
   </ItemGroup>

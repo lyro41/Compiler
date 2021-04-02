@@ -1,3 +1,3 @@
 #include "FunctionAttribute.h"
 
-FunctionAttribute::FunctionAttribute(std::wstring _name) : name(_name) {}
+FunctionAttribute::FunctionAttribute(std::wstring _name) : TypeAttribute(L"CFUNC", false, false), name(_name) {}

@@ -3,7 +3,7 @@
 bool TID::LocalTIDSearch(ITIDEntry* entry) {
   try {
     return !IsConflicting(entry);
-  } catch (SemanticException& e) {
+  } catch (SemanticException&) {
     return false;
   }
   return true;
@@ -34,7 +34,24 @@ ITIDEntry* TID::FindByName(std::wstring name) {
   }
   return nullptr;
 }
-
+template <typename T>
+T* TID::FindByName(std::wstring name) {
+  NamedTIDEntry named(name);
+  for (auto& e : entries_) {
+    try {
+      if (!named.ShouldPush(e)) { 
+        if (dynamic_cast<T*>(e))
+          return e;
+      };
+    } catch (SemanticException&) {
+      if (dynamic_cast<T*>(e)) return e;
+    }
+  }
+  if (parent) {
+    return parent->FindByName(name);
+  }
+  return nullptr;
+}
 std::vector<ITIDEntry*> TID::FindAllByName(std::wstring name) {
   NamedTIDEntry named(name);
   std::vector<ITIDEntry*> list;

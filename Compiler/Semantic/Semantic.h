@@ -1,6 +1,7 @@
 #pragma once
 #include "ImportedFileTIDEntry.h"
 #include "NamedTIDEntry.h"
+#include "FunctionTIDEntry.h"
 #include "TID.h"
 #include "Attribute.h"
 #include "TypeAttribute.h"
@@ -43,6 +44,9 @@ class SemanticAnalyzer {
   void ChangeCurrentTID(TID* target);
   TID* GetCurrentTID();
   TID* GetGlobalTID();
+  void CheckPrototypes();
+
+  std::vector<FunctionTIDEntry*> called_prototypes;
  private:
   TID* current_;
   TID* global_;

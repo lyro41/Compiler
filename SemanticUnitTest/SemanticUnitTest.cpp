@@ -26,6 +26,8 @@
 #include "../Compiler/FunctionAttribute.cpp"
 #include "../Compiler/JumpAttribute.h"
 #include "../Compiler/JumpAttribute.cpp"
+#include "../Compiler/StructAttribute.h"
+#include "../Compiler/StructAttribute.cpp"
 
 #include "../Compiler/TID.h"
 #include "../Compiler/TID.cpp"
@@ -109,8 +111,15 @@ namespace SemanticUnitTest
     }
     TEST_METHOD(Test_NestedNamespace) { RunTest(L"6_input.txt", false); }
     TEST_METHOD(Test_GlobalNamespace) { RunTest(L"7_input.txt", false); }
-    TEST_METHOD(Test_Bug) { RunTest(L"8_input.txt", false); }
+    TEST_METHOD(Test_Bug) { RunTest(L"bug_input.txt", false); }
     TEST_METHOD(Test_AssignmentOperators) { RunTest(L"9_input.txt", false); }
-    TEST_METHOD(Test_AmbigiousFunctionCall) { RunTest(L"10_input.txt", true); }
+    TEST_METHOD(TestExc_AmbigiousFunctionCall) { RunTest(L"10_input.txt", true); }
+    TEST_METHOD(Test_Recursion) { RunTest(L"11_input.txt", false); } 
+    TEST_METHOD(TestExc_WrongFunctionCall) { RunTest(L"12_input.txt", true); }
+    TEST_METHOD(TestExc_UnimplementedPrototype) { RunTest(L"13_input.txt", true); }
+    TEST_METHOD(TestExc_ContinueFromNonloop) { RunTest(L"14_input.txt", true); }
+    TEST_METHOD(TestExc_BreakFromNonloop) { RunTest(L"15_input.txt", true); }
+	  TEST_METHOD(Test_ForLoopBreak) { RunTest(L"16_input.txt", false); }
+    TEST_METHOD(Test_WhileLoopBreak) { RunTest(L"17_input.txt", false); }
 	};
 }

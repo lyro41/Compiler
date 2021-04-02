@@ -1,0 +1,9 @@
+
+
+func lol(int a) : void {
+
+}
+
+func main() : int32 {
+	lol(1,1);
+}

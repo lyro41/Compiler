@@ -67,32 +67,91 @@ bool Parser::CanCast(std::wstring lhs, std::wstring rhs) {
   if (rhs == L"bool") { 
     return CanConvertToBool(lhs);
   }
+  try {
+    CheckIntegral(lhs); 
+    CheckIntegral(rhs);
+  } catch (...) {
+    return false;
+  }
+  return true;
 }
 
 bool Parser::CanConvertToBool(std::wstring rhs) { 
-  if (rhs.find(L"int") != rhs.npos || rhs == L"double" || rhs == L"float") {
+  if (rhs == L"int8" || rhs == L"uint8" || rhs == L"char" || rhs == L"int16" ||
+      rhs == L"uint16" || rhs == L"int32" || rhs == L"uint32" ||
+      rhs == L"int64" || rhs == L"uint64" || rhs == L"float" ||
+      rhs == L"double" || rhs == L"bool") {
     return true;
   }
   return false;
 }
 
 void Parser::CheckInts(std::wstring lhs, std::wstring rhs) { 
-  if (lhs.find(L"int") == lhs.npos && lhs != L"CINT" && lhs != L"CHEX")
+  if (!IsIntegerType(lhs))
     ThrowException("Left side value must be int");
-  if (rhs.find(L"int") == rhs.npos && rhs != L"CINT" && rhs != L"CHEX")
+  if (!IsIntegerType(rhs))
     ThrowException("Right side value must be int");
 }
 
 void Parser::CheckInt(std::wstring lhs) {
-  if (lhs.find(L"int") == lhs.npos && lhs != L"CINT" && lhs != L"CHEX")
+  if (!IsIntegerType(lhs))
     ThrowException("Left side value must be int");
 }
 
 void Parser::CheckIntegral(std::wstring lhs) {
-  if(lhs.find(L"int") == lhs.npos && lhs != L"float" && lhs != L"double" 
-     && lhs != L"CINT" && lhs != L"CHEX" && lhs != L"CFLOAT")
+  if(!IsIntegerType(lhs) && lhs != L"float" && lhs != L"double" && lhs != L"CFLOAT")
     ThrowException("Expected integral type");
 
+}
+
+bool Parser::DoTypesMatch(std::wstring lhs, std::wstring rhs) { 
+  if (lhs.find(L"int") != lhs.npos) { 
+    return lhs == rhs || rhs == L"CINTEGER";
+  }
+  if (lhs == L"float") { 
+    return lhs == rhs || rhs == L"CFLOAT";
+  }
+  if (lhs == L"double") { 
+    return lhs == rhs || rhs == L"CFLOAT";
+  } 
+  
+  if (rhs.find(L"int") != rhs.npos) { 
+    return rhs == lhs || lhs == L"CINTEGER";
+  }
+  if (rhs == L"float") { 
+    return rhs == lhs || lhs == L"CFLOAT";
+  }
+  if (rhs == L"double") { 
+    return rhs == lhs || lhs == L"CFLOAT";
+  }
+
+  return lhs == rhs;
+}
+
+bool Parser::IsIntegerType(std::wstring type) {
+return type == L"int8" ||
+       type == L"uint8" ||
+       type == L"char" ||
+       type == L"int16" ||
+       type == L"uint16" ||
+       type == L"int32" ||
+       type == L"uint32" ||
+       type == L"int64" ||
+       type == L"uint64" ||
+       type == L"CINTEGER" ||
+       type == L"CHEX";
+}
+
+void Parser::DeclareJumpableConstruction() {
+  TypeAttribute* type =
+      dynamic_cast<TypeAttribute*>(semantic_->TopStackAttribute());
+  if (!type) {
+    JumpAttribute* jump =
+        dynamic_cast<JumpAttribute*>(semantic_->TopStackAttribute());
+    if (!jump) ThrowException("Where?");
+    type = jump->return_type_ptr;
+  }
+  semantic_->PushAttribute(new JumpAttribute(type));
 }
 
 bool Parser::IsAssignmentOperator(Token token) {
@@ -143,6 +202,9 @@ void Parser::ParseProgram() {
   if (curToken_.type != Token::Type::ENDOFFILE) {
     ThrowException("Unexpected token");
   }
+#ifdef SEMANTIC
+  semantic_->CheckPrototypes();
+#endif
 }
 
 void Parser::ParsePreprocessor() {
@@ -240,7 +302,8 @@ void Parser::ParseStructDefinition() {
   TID* curTID = semantic_->GetCurrentTID();
   semantic_->DisconnectCurrentTID();
   str_entry->SetCurrentTID(curTID);
-  semantic_->PushAttribute(new TypeAttribute(str_entry->name, false, true));
+  semantic_->PushInCurrentTID(str_entry);
+  semantic_->PushAttribute(new StructAttribute(str_entry->name, false, true, curTID));
 #endif
   curToken_ = get();
   if (curToken_.symbol != L";") {
@@ -300,25 +363,29 @@ void Parser::ParseFunction() {
   if (curToken_.symbol != L";") {
     // If it`s not forward declaration
 #ifdef SEMANTIC
-    func_entry->is_proto = false;
-    semantic_->PushInCurrentTID(func_entry);
+    TID* curTID = semantic_->GetCurrentTID();
     semantic_->CreateNewTID();
     while (!semantic_->AttributeStackEmpty()) {
       ArgumentAttribute* arg_attr =
           dynamic_cast<ArgumentAttribute*>(semantic_->TopStackAttribute());
       if (!arg_attr) ThrowException("Semantic Analyzer expected Argument");
 
-      VariableTIDEntry* var_entry = new VariableTIDEntry(arg_attr->type);
+      VariableTIDEntry* var_entry = new VariableTIDEntry(&arg_attr->type);
       var_entry->name = arg_attr->name;
       func_entry->type_arguments.push_back(arg_attr->type);
       semantic_->PushInCurrentTID(var_entry);
       semantic_->PopAttribute();
       //semantic_->PushAttribute(new TypeAttribute(func_entry->return_type, false , false));
     }
+    func_entry->is_proto = false;
+    curTID->PushInTID(func_entry);
+    semantic_->PushAttribute(
+        new TypeAttribute(func_entry->return_type, false, false));
 #endif
     ParseFuncbody();
-    //if (!semantic_->AttributeStackEmpty())
-    // semantic_->PopAttribute();
+    
+    if (!semantic_->AttributeStackEmpty())
+     semantic_->PopAttribute();
 #ifdef SEMANTIC
     semantic_->RemoveCurrentTID();
 #endif
@@ -360,6 +427,37 @@ void Parser::ParseConcreteType() {
   }
   std::wstring type = curToken_.symbol;
   curToken_ = get();
+#ifdef SEMANTIC
+  StructTIDEntry* str_def = nullptr;
+  if (curToken_.symbol == L"$") {
+    str_def =
+        dynamic_cast<StructTIDEntry*>(semantic_->GetCurrentTID()->FindByName(type));
+    if (!str_def) {
+      ThrowException("Expected struct type name");
+    }
+    semantic_->StartNamespaceParse();
+    semantic_->ChangeCurrentTID(str_def->GetCurrentTID());
+    Token buffer = get();
+    curToken_ = get();
+    str_def = dynamic_cast<StructTIDEntry*>(
+        semantic_->GetCurrentTID()->FindByName(buffer.symbol));
+    if (!str_def) {
+      ThrowException("Expected struct type name");
+    }
+    type.append(L"$" + buffer.symbol);
+    while (curToken_.symbol == L"$") {
+      buffer = get();
+      str_def = dynamic_cast<StructTIDEntry*>(
+          semantic_->GetCurrentTID()->FindByName(buffer.symbol));
+      if (!str_def) {
+        ThrowException("Expected struct type name");
+      }
+      type.append(L"$"+buffer.symbol);
+      curToken_ = get();
+    }
+
+  }
+#endif
   while (curToken_.symbol == L"@") {
     type.append(curToken_.symbol);
     curToken_ = get();
@@ -385,7 +483,24 @@ void Parser::ParseConcreteType() {
     }
   }
 #ifdef SEMANTIC
-  TypeAttribute* type_attr = new TypeAttribute(type, false, true);
+  if (str_def) {
+    StructAttribute* str_var = new StructAttribute(
+        type, false, true, str_def->GetCurrentTID());
+    if (type.find(L"@") != type.npos || type.find(L"[") != type.npos) {
+      str_var->is_ptr = true;
+    }
+    semantic_->PushAttribute(str_var);
+    return;
+  }
+  ITIDEntry* entry =
+      semantic_->GetCurrentTID()->FindByName(type);
+  StructTIDEntry* struct_def = dynamic_cast<StructTIDEntry*>(entry);
+  TypeAttribute* type_attr;
+  if (struct_def) {
+    type_attr = new StructAttribute(type, false, true, struct_def->GetCurrentTID());  
+  } else {
+    type_attr = new TypeAttribute(type, false, true);
+  }
   semantic_->PushAttribute(type_attr);
 #endif
 }
@@ -581,8 +696,8 @@ void Parser::ParseVarDef() {
 #ifdef SEMANTIC
   TypeAttribute* type_attr =
       dynamic_cast<TypeAttribute*>(semantic_->TopStackAttribute());
-  if (!type_attr) ThrowException("Semantic analyzer expected Type");
-  VariableTIDEntry* var_entry = new VariableTIDEntry(*type_attr);
+
+  VariableTIDEntry* var_entry = new VariableTIDEntry(type_attr->Clone());
   var_entry->name = curToken_.symbol;
   semantic_->PushInCurrentTID(var_entry);
 #endif
@@ -958,6 +1073,42 @@ void Parser::ParseUnary() {
       type_attr->is_constant = false;
       type_attr->is_lrvalue = false;
     }
+    if (tok.symbol == L"@") {
+      if (!type_attr->is_lrvalue) ThrowException("Type must be LValue");
+      bool found_ptr = false;
+      auto iter =
+          type_attr->type.begin();
+      for (; iter != type_attr->type.end();
+           ++iter) {
+        if (*iter == L'@') {
+          type_attr->type.erase(iter, iter + 1);
+          found_ptr = true;
+          break;
+        }
+        if (*iter == L'[') {
+          auto siter = iter;
+          found_ptr = true;
+          for (; *siter != L']'; ++siter);
+          type_attr->type.erase(iter, siter);
+          break;
+        }
+      }
+      
+      if (!found_ptr) {
+        ThrowException("Only pointer type can be dereferenced");
+      }
+      StructAttribute* str_attr =
+          dynamic_cast<StructAttribute*>(type_attr);
+      if (str_attr) {
+        if (str_attr->type.find('@') == str_attr->type.npos
+            && str_attr->type.find('[') == str_attr->type.npos)
+        {
+          str_attr->is_ptr = false;
+        }
+      }
+      type_attr->is_constant = false;
+      type_attr->is_lrvalue = true;
+    }
     prefixes.pop();
   }
 #endif
@@ -989,7 +1140,13 @@ void Parser::ParseGensec() {
   }
 
   ParseNamespace();
+  #ifdef SEMANTIC
+  semantic_->StartNamespaceParse();
+  #endif
   ParsePostfixOperations();
+#ifdef SEMANTIC
+  semantic_->EndNamespaceParse();
+#endif
 }
 
 void Parser::ParseNamespace() {
@@ -1027,7 +1184,7 @@ void Parser::ParseNamespace() {
       }
       VariableTIDEntry* var = dynamic_cast<VariableTIDEntry*>(entry);
       if (var) {
-        semantic_->PushAttribute(new TypeAttribute(var->type));
+        semantic_->PushAttribute(var->type->Clone());
       } else {
         FunctionTIDEntry* func = dynamic_cast<FunctionTIDEntry*>(entry);
         if (func) {
@@ -1055,11 +1212,11 @@ void Parser::ParseNamespace() {
       }
       VariableTIDEntry* var = dynamic_cast<VariableTIDEntry*>(entry);
       if (var) {
-        semantic_->PushAttribute(new TypeAttribute(var->type));
+        semantic_->PushAttribute(var->type->Clone());
       } else {
         FunctionTIDEntry* func = dynamic_cast<FunctionTIDEntry*>(entry);
         if (func) {
-          semantic_->PushAttribute(new TypeAttribute(L"CFUNC", true, false));
+          semantic_->PushAttribute(new FunctionAttribute(curToken_.symbol));
         } else {
           ThrowException("Unexpected identifier");
         }
@@ -1101,11 +1258,11 @@ void Parser::ParseNestedNamespace() {
       }
       VariableTIDEntry* var = dynamic_cast<VariableTIDEntry*>(entry);
       if (var) {
-        semantic_->PushAttribute(new TypeAttribute(var->type));
+        semantic_->PushAttribute(var->type->Clone());
       } else {
         FunctionTIDEntry* func = dynamic_cast<FunctionTIDEntry*>(entry);
         if (func) {
-          semantic_->PushAttribute(new TypeAttribute(L"CFUNC", true, false));
+          semantic_->PushAttribute(new FunctionAttribute(func->name));
         } else {
           ThrowException("Unexpected identifier");
         }
@@ -1128,23 +1285,29 @@ void Parser::ParseOperand() {
   }
   if (curToken_.type != Token::Type::LITCONSTANT &&
       curToken_.type != Token::Type::NUMCONSTANT &&
-      curToken_.symbol != L"NULL" && curToken_.symbol != L"NIL") {
+      curToken_.symbol != L"NULL" && curToken_.symbol != L"NIL" &&
+      curToken_.symbol != L"true" && curToken_.symbol != L"false") {
     ThrowException("Expected any constant");
   }
 #ifdef SEMANTIC
-  if (semantic_->IsNumberInt(curToken_.symbol)) {
-    semantic_->PushAttribute(new TypeAttribute(L"CINTEGER", true, false));
+  if (curToken_.type == Token::Type::LITCONSTANT) {
+    semantic_->PushAttribute(new TypeAttribute(L"char@", true, false));
   } else {
-    if (semantic_->IsNumberFloat(curToken_.symbol)) {
-      semantic_->PushAttribute(new TypeAttribute(L"CFLOAT", true, false));
+    if (curToken_.symbol == L"true" || curToken_.symbol == L"false") {
+      semantic_->PushAttribute(new TypeAttribute(L"bool", true, false));
     } else {
-      if (semantic_->IsNumberHex(curToken_.symbol)) {
-        semantic_->PushAttribute(new TypeAttribute(L"CHEX", true, false));
+      if (semantic_->IsNumberInt(curToken_.symbol)) {
+        semantic_->PushAttribute(new TypeAttribute(L"CINTEGER", true, false));
+      } else {
+        if (semantic_->IsNumberFloat(curToken_.symbol)) {
+          semantic_->PushAttribute(new TypeAttribute(L"CFLOAT", true, false));
+        } else {
+          if (semantic_->IsNumberHex(curToken_.symbol)) {
+            semantic_->PushAttribute(new TypeAttribute(L"CHEX", true, false));
+          }
+        }
       }
     }
-  }
-  if (curToken_.type == Token::Type::LITCONSTANT) {
-    semantic_->PushAttribute(new TypeAttribute(L"CSTRING", true, false));     
   }
 #endif
   curToken_ = get();
@@ -1154,7 +1317,40 @@ void Parser::ParseAttribute() {
   if (curToken_.type != Token::Type::IDENTIFIER) {
     ThrowException("Expected identifier");
   }
+#ifdef SEMANTIC
+  semantic_->PopAttribute();
+  ITIDEntry* entry = semantic_->GetCurrentTID()->FindByName(curToken_.symbol);
+  if (!entry) {
+    ThrowException("Can`t find attribute "  + std::string(curToken_.symbol.begin(), curToken_.symbol.end()));
+  }
+  VariableTIDEntry* var = dynamic_cast<VariableTIDEntry*>(entry);
+  if (var) {
+    semantic_->PushAttribute(var->type->Clone());
+    curToken_ = get();
+  } else {
+    FunctionTIDEntry* func = dynamic_cast<FunctionTIDEntry*>(entry);
+    if (func) {
+      semantic_->PushAttribute(new FunctionAttribute(func->name));
+      curToken_ = get();
+    } else {
+      NamespaceTIDEntry* nspace = dynamic_cast <NamespaceTIDEntry*>(entry);
+      if (nspace) {
+        curToken_ = get();
+        if (curToken_.symbol != L"$") {
+          ThrowException("Expected $");
+        }
+        curToken_ = get();
+        semantic_->ChangeCurrentTID(nspace->GetCurrentTID());
+        ParseNestedNamespace();
+      } else {
+        ThrowException("Unable to use struct as attribute");
+      }
+    }
+  }
+#endif
+#ifndef SEMANTIC
   curToken_ = get();
+#endif
   ParsePostfixOperations();
 }
 
@@ -1206,31 +1402,53 @@ void Parser::ParsePostfixOperations() {
           dynamic_cast<FunctionAttribute*>(semantic_->TopStackAttribute());
       std::vector<ITIDEntry*> functions =
           semantic_->GetCurrentTID()->FindAllByName(f_attr->name);
-      bool is_found = true;
-      
+      bool is_found = false;
+      FunctionTIDEntry* found_func = nullptr;
+      size_t min_argc = 0xdead, max_argc = 0xdead;
       for (auto& e : functions) {
+
+        bool all_ok = true;
         FunctionTIDEntry* func = dynamic_cast<FunctionTIDEntry*>(e);
-        if (func->is_proto)
-          ThrowException("Unable to call prototype of function");
-        if (func->type_arguments.size() != args.size()) continue;
+        if (min_argc == 0xdead) {
+          min_argc = max_argc = func->type_arguments.size();
+        }
+        min_argc = std::min(min_argc, func->type_arguments.size());
+        max_argc = std::max(max_argc, func->type_arguments.size());
+        if (func->type_arguments.size() != args.size()) {
+          all_ok = false;
+          continue;
+        }
+
 
         for (int i = 0; i < args.size(); ++i) {
-          if (args[i] != func->type_arguments[i].type) {
-            is_found = false;
+          if (!DoTypesMatch(args[i], func->type_arguments[i].type)) {
+            all_ok = false;
             break;
           }
         }
-        if (is_found) {
-          for (int j = 0; j < func->type_arguments.size(); ++j) {
-            semantic_->PopAttribute();
+
+
+        if (all_ok) {
+          if(found_func != nullptr) {
+            ThrowException("Ambigious function call");
           }
-          semantic_->PushAttribute(new TypeAttribute(func->return_type, false, false));
+          is_found = true;
+          found_func = func;
         }
+      }
+      if (is_found) {
+        if (found_func->is_proto) {
+          semantic_->called_prototypes.push_back(found_func);
+        }
+        semantic_->PushAttribute(new TypeAttribute(found_func->return_type, false, false));
       }
       if (!is_found) {
         for (auto& e : functions) {
           FunctionTIDEntry* func = dynamic_cast<FunctionTIDEntry*>(e);
-          if (func->type_arguments.size() != args.size()) continue;
+          if (func->type_arguments.size() != args.size()) {
+            is_found = false;
+            continue;
+          }
           bool all_ok = true;
           for (int i = 0; i < args.size(); ++i) {
             if (!CanCast(args[i],func->type_arguments[i].type)) {
@@ -1242,6 +1460,9 @@ void Parser::ParsePostfixOperations() {
             if (is_found) {
               ThrowException("Ambigious function call");
             } else {
+              if (func->is_proto) {
+                semantic_->called_prototypes.push_back(func);
+              }
               is_found = true;
               semantic_->PushAttribute(
                   new TypeAttribute(func->return_type, false, false));
@@ -1249,8 +1470,19 @@ void Parser::ParsePostfixOperations() {
           }
         }
       }
-      if (!is_found)
-        ThrowException("Unable to find called function overload");
+      
+      if (!is_found) {  
+        if (args.size() > min_argc && args.size() < max_argc) {
+          ThrowException("Unable to find called function overload");
+        } else {
+          ThrowException(
+              args.size() < min_argc
+                  ? "Unable to find called function overload, too few arguments"
+                  : "Unable to find called function overload, too many arguments");
+        }
+        
+      }
+      semantic_->PopAttribute();
 #endif
       curToken_ = get();
     }
@@ -1269,15 +1501,21 @@ void Parser::ParsePostfixOperations() {
         if (base_type[i] == L'[') break;
       }
       size_t expected_count = 1;
+      std::wstring fullsuffix = base_type.substr(i);
       suffix = base_type.substr(i);
+      int j = 1;
       if (suffix[0] == L'@') {
         suffix = L"@";
       } else {
-        while (type->type[i] != L']') {
+        while (base_type[i + j] != L']') {
           ++expected_count;
+          ++j;
         }
       }
-      base_type = base_type.substr(0, i - 1);
+      base_type = base_type.substr(0, i);
+      TID* struct_tid = nullptr;
+      StructAttribute* struct_var = dynamic_cast<StructAttribute*>(type);
+      if (struct_var) struct_tid = struct_var->struct_tid_;
       semantic_->PopAttribute();
 
       size_t actual_count = 1;
@@ -1300,11 +1538,29 @@ void Parser::ParsePostfixOperations() {
       }
       curToken_ = get();
 #ifdef SEMANTIC
-      TypeAttribute* type_attr = new TypeAttribute(base_type + suffix.substr(actual_count), false, true);
+      if (struct_tid) {
+        StructAttribute* str_attr = new StructAttribute(
+            base_type + (j == fullsuffix.size() - 1
+                             ? L""
+                             : fullsuffix.substr(j)), false, true, struct_tid); 
+        if (j != fullsuffix.size() - 1) str_attr->is_ptr = true;
+        semantic_->PushAttribute(str_attr);
+      } else {
+        TypeAttribute* type_attr = new TypeAttribute(base_type + (j == fullsuffix.size() - 1 ? L"" : fullsuffix.substr(j)), false, true);
+        semantic_->PushAttribute(type_attr);
+      }
 #endif
     }
     if (curToken_.symbol == L".") {
       shouldLeave = false;
+#ifdef SEMANTIC
+      StructAttribute* str_var =
+          dynamic_cast<StructAttribute*>(semantic_->TopStackAttribute());
+      if (str_var->is_ptr) {
+        ThrowException("Unable to address attributes of pointer struct");
+      }
+      semantic_->ChangeCurrentTID(str_var->struct_tid_);
+#endif
       curToken_ = get();
       ParseAttribute();
     }
@@ -1347,12 +1603,7 @@ void Parser::ParseSwitch() {
   curToken_ = get();
   ParseExpr();
 #ifdef SEMANTIC
-  TypeAttribute* type_attr = dynamic_cast<TypeAttribute*>(semantic_->TopStackAttribute());
-  if (!CanConvertToBool(type_attr->type))
-    ThrowException("Expected type converible to bool");
-  semantic_->PopAttribute();
-  type_attr = dynamic_cast<TypeAttribute*>(semantic_->TopStackAttribute());
-  semantic_->PushAttribute(new JumpAttribute(type_attr));
+  DeclareJumpableConstruction();
 #endif
   if (curToken_.symbol != L")") {
     ThrowException("Expected closing bracket");
@@ -1409,8 +1660,7 @@ void Parser::ParseWhile() {
     ThrowException("Unable to cast");
   }
   semantic_->PopAttribute();
-  type = dynamic_cast<TypeAttribute*>(semantic_->TopStackAttribute());
-  semantic_->PushAttribute(new JumpAttribute(type));
+  DeclareJumpableConstruction();
 #endif
   if (curToken_.symbol != L")") {
     ThrowException("Expected closing brackets");
@@ -1418,6 +1668,9 @@ void Parser::ParseWhile() {
 
   curToken_ = get();
   ParseBody();
+  #ifdef SEMANTIC
+  semantic_->PopAttribute();
+  #endif
   if (curToken_.symbol == L"else") {
     curToken_ = get();
     ParseBody();
@@ -1428,14 +1681,7 @@ void Parser::ParseFor() {
   // we already have for
 #ifdef SEMANTIC
   semantic_->CreateNewTID();
- //TypeAttribute* type = dynamic_cast<TypeAttribute*>(semantic_->TopStackAttribute());
- //if (!type) {
- //  JumpAttribute* jump =
- //      dynamic_cast<JumpAttribute*>(semantic_->TopStackAttribute());
- //  if (!jump) ThrowException("Where?");
- //  type = jump->return_type_ptr;
- //}
- //semantic_->PushAttribute(new JumpAttribute(type));
+  DeclareJumpableConstruction();
 #endif
   curToken_ = get();
   if (curToken_.symbol != L"(") {
@@ -1474,6 +1720,9 @@ void Parser::ParseFor() {
   curToken_ = get();
   if (curToken_.symbol != L")") {
     ParseExpr();
+#ifdef SEMANTIC
+    semantic_->PopAttribute();
+#endif
   }
 
   if (curToken_.symbol != L")") {
@@ -1483,6 +1732,7 @@ void Parser::ParseFor() {
 
   ParseBody();
 #ifdef SEMANTIC
+  semantic_->PopAttribute();
   semantic_->RemoveCurrentTID();
 #endif
   if (curToken_.symbol == L"else") {
@@ -1502,13 +1752,12 @@ void Parser::ParseDowhile() {
   curToken_ = get();
 #ifdef SEMANTIC
   semantic_->CreateNewTID();
-  TypeAttribute* ret_type =
-      dynamic_cast<TypeAttribute*>(semantic_->TopStackAttribute());
-  semantic_->PushAttribute(new JumpAttribute(ret_type));
+  DeclareJumpableConstruction();
 #endif
   ParseBody();
 #ifdef SEMANTIC
   semantic_->RemoveCurrentTID();
+  semantic_->PopAttribute();
 #endif
   if (curToken_.symbol != L"while") {
     ThrowException("Expected while");
@@ -1581,25 +1830,37 @@ void Parser::ParseReturn() {
   // we already have return
   curToken_ = get();
   #ifdef SEMANTIC
-  //TypeAttribute* expected =
-  //    dynamic_cast<TypeAttribute*>(semantic_->TopStackAttribute());
-  //if (!expected) {
-  //  JumpAttribute* jmpattr = dynamic_cast<JumpAttribute*>(semantic_->TopStackAttribute());
-  //  if (!jmpattr) ThrowException("Unable to return from nothing");
-  //  expected = jmpattr->return_type_ptr;
-  //}
+  TypeAttribute* expected =
+      dynamic_cast<TypeAttribute*>(semantic_->TopStackAttribute());
+  if (!expected) {
+    JumpAttribute* jmpattr = dynamic_cast<JumpAttribute*>(semantic_->TopStackAttribute());
+    if (!jmpattr) ThrowException("Unable to return from nothing");
+    expected = jmpattr->return_type_ptr;
+  }
   #endif
   if (curToken_.symbol != L";") {
-    ParseExpr();
-  }
 #ifdef SEMANTIC
- //TypeAttribute* type =
- //    dynamic_cast<TypeAttribute*>(semantic_->TopStackAttribute());
- //if (!CanCast(expected->type, type->type)) {
- //  ThrowException("Unable to cast");
- //}
-  semantic_->PopAttribute();
+    if (expected->type == L"void") {
+      ThrowException("Function doesn`t have return type");
+    }
 #endif
+    ParseExpr();
+#ifdef SEMANTIC
+    TypeAttribute* type =
+        dynamic_cast<TypeAttribute*>(semantic_->TopStackAttribute());
+    if (!CanCast(expected->type, type->type)) {
+      ThrowException("Unable to cast to return type");
+    }
+    semantic_->PopAttribute();
+#endif
+  } else {
+#ifdef SEMANTIC
+    if (expected->type != L"void") {
+      ThrowException("Function must return value");
+    }
+#endif
+  }
+
 }
 
 void Parser::ParseTypeInstance() {
