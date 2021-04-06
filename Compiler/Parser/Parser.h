@@ -48,6 +48,7 @@ class Parser
   bool DoTypesMatch(std::wstring lhs, std::wstring rhs);
   bool IsIntegerType(std::wstring type);
   void DeclareJumpableConstruction();
+  TypeAttribute* TryCast(TypeAttribute* target, TypeAttribute* expr);
 
   bool IsAssignmentOperator(Token token);
   bool IsPrefixUnaryOperator(Token token);

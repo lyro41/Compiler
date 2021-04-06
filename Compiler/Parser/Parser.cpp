@@ -59,7 +59,7 @@ TypeAttribute* Parser::CastToHighest(std::wstring lhs, std::wstring rhs) {
 bool Parser::CanCast(std::wstring lhs, std::wstring rhs) { 
   if (type_map.find(lhs) == type_map.end() ||
       type_map.find(rhs) == type_map.end()) {
-    return false;
+    return lhs == rhs;
   }
   if (lhs == L"bool") {
     return CanConvertToBool(rhs);  
@@ -71,7 +71,7 @@ bool Parser::CanCast(std::wstring lhs, std::wstring rhs) {
     CheckIntegral(lhs); 
     CheckIntegral(rhs);
   } catch (...) {
-    return false;
+    return lhs == rhs;
   }
   return true;
 }
@@ -152,6 +152,18 @@ void Parser::DeclareJumpableConstruction() {
     type = jump->return_type_ptr;
   }
   semantic_->PushAttribute(new JumpAttribute(type));
+}
+
+TypeAttribute* Parser::TryCast(TypeAttribute* lhs, TypeAttribute* rhs) { 
+  if (CanCast(lhs->type, rhs->type)) {
+    return new TypeAttribute(lhs->type, false, false);
+  }
+  if (lhs->type == rhs->type) {
+    TypeAttribute* ret = lhs->Clone();
+    ret->is_lrvalue = false;
+    return ret;
+  }
+
 }
 
 bool Parser::IsAssignmentOperator(Token token) {
@@ -1074,7 +1086,6 @@ void Parser::ParseUnary() {
       type_attr->is_lrvalue = false;
     }
     if (tok.symbol == L"@") {
-      if (!type_attr->is_lrvalue) ThrowException("Type must be LValue");
       bool found_ptr = false;
       auto iter =
           type_attr->type.begin();
@@ -1123,6 +1134,10 @@ void Parser::ParseGensec() {
 
     curToken_ = get();
     ParseType();
+#ifdef SEMANTIC
+    TypeAttribute* to_cast =
+        dynamic_cast<TypeAttribute*>(semantic_->TopStackAttribute());
+#endif
     if (curToken_.symbol != L">") {
       ThrowException("Expected closing triangle bracket");
     }
@@ -1133,9 +1148,20 @@ void Parser::ParseGensec() {
     }
     curToken_ = get();
     ParseExpr();
+#ifdef SEMANTIC
+    TypeAttribute* from_cast =
+        dynamic_cast<TypeAttribute*>(semantic_->TopStackAttribute());
+#endif
     if (curToken_.symbol != L")") {
       ThrowException("Expected closing bracket");
     }
+    curToken_ = get();
+#ifdef SEMANTIC
+    TypeAttribute* result = TryCast(to_cast, from_cast);
+    semantic_->PopAttribute();
+    semantic_->PopAttribute();
+    semantic_->PushAttribute(result);
+#endif
     return;
   }
 
@@ -1398,6 +1424,7 @@ void Parser::ParsePostfixOperations() {
         ThrowException("Expected closing bracket");
       }
 #ifdef SEMANTIC
+
       FunctionAttribute* f_attr =
           dynamic_cast<FunctionAttribute*>(semantic_->TopStackAttribute());
       std::vector<ITIDEntry*> functions =
@@ -1405,6 +1432,7 @@ void Parser::ParsePostfixOperations() {
       bool is_found = false;
       FunctionTIDEntry* found_func = nullptr;
       size_t min_argc = 0xdead, max_argc = 0xdead;
+      semantic_->PopAttribute();
       for (auto& e : functions) {
 
         bool all_ok = true;
@@ -1426,7 +1454,6 @@ void Parser::ParsePostfixOperations() {
             break;
           }
         }
-
 
         if (all_ok) {
           if(found_func != nullptr) {
@@ -1482,7 +1509,6 @@ void Parser::ParsePostfixOperations() {
         }
         
       }
-      semantic_->PopAttribute();
 #endif
       curToken_ = get();
     }
@@ -1503,6 +1529,9 @@ void Parser::ParsePostfixOperations() {
       size_t expected_count = 1;
       std::wstring fullsuffix = base_type.substr(i);
       suffix = base_type.substr(i);
+      if (suffix.empty()) {
+        ThrowException("Variable is not pointer or array type");
+      }
       int j = 1;
       if (suffix[0] == L'@') {
         suffix = L"@";
@@ -1521,7 +1550,12 @@ void Parser::ParsePostfixOperations() {
       size_t actual_count = 1;
 #endif
       ParseAssExpr();
-      // TO DO : check for int
+#ifdef SEMANTIC
+      TypeAttribute* ass_expr =
+          dynamic_cast<TypeAttribute*>(semantic_->TopStackAttribute());
+      CheckInt(ass_expr->type);
+      semantic_->PopAttribute();
+#endif
 
       while (curToken_.symbol == L",") {
 #ifdef SEMANTIC
@@ -1532,6 +1566,12 @@ void Parser::ParsePostfixOperations() {
 #endif
         curToken_ = get();
         ParseAssExpr();
+#ifdef SEMANTIC
+        TypeAttribute* ass_expr =
+            dynamic_cast<TypeAttribute*>(semantic_->TopStackAttribute());
+        CheckInt(ass_expr->type);
+        semantic_->PopAttribute();
+#endif
       }
       if (curToken_.symbol != L"]") {
         ThrowException("Expected closing rect bracket");
@@ -1884,12 +1924,23 @@ void Parser::ParseTypeInstance() {
 #endif
     curToken_ = get();
     ParseAssExpr();
+#ifdef SEMANTIC
+    TypeAttribute* expr =
+        dynamic_cast<TypeAttribute*>(semantic_->TopStackAttribute());
+    CheckInt(expr->type);
+    semantic_->PopAttribute();
+#endif
     while (curToken_.symbol == L",") {
 #ifdef SEMANTIC
       type->type.append(curToken_.symbol);
 #endif
       curToken_ = get();
       ParseAssExpr();
+#ifdef SEMANTIC
+      expr = dynamic_cast<TypeAttribute*>(semantic_->TopStackAttribute());
+      CheckInt(expr->type);
+      semantic_->PopAttribute();
+#endif
     }
     if (curToken_.symbol != L"]") {
       ThrowException("Expected closing rect closing bracket");

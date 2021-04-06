@@ -120,6 +120,8 @@ namespace SemanticUnitTest
     TEST_METHOD(TestExc_ContinueFromNonloop) { RunTest(L"14_input.txt", true); }
     TEST_METHOD(TestExc_BreakFromNonloop) { RunTest(L"15_input.txt", true); }
 	  TEST_METHOD(Test_ForLoopBreak) { RunTest(L"16_input.txt", false); }
-    TEST_METHOD(Test_WhileLoopBreak) { RunTest(L"17_input.txt", false); }
+    TEST_METHOD(Test_WhileLoopBreak) { RunTest(L"17_input.txt", false); } 
+    
+    TEST_METHOD(Complex_1) { RunTest(L"complex_input.txt", false); }
 	};
 }
