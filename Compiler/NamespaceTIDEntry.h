@@ -5,6 +5,7 @@ class NamespaceTIDEntry : public NamedTIDEntry {
  public:
     NamespaceTIDEntry();
     virtual bool ShouldPush(ITIDEntry* entry);
+    virtual TID* GetTID() override;
     TID* GetCurrentTID();
     void SetCurrentTID(TID* tid);
     ~NamespaceTIDEntry();

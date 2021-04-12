@@ -284,6 +284,8 @@ void Parser::ParseNamespaceDefinition() {
   TID* curTID = semantic_->GetCurrentTID();
   semantic_->DisconnectCurrentTID();
   nspace_entry->SetCurrentTID(curTID);
+  //curTID->parent =
+  //    semantic_->GetCurrentTID();
   semantic_->PushInCurrentTID(nspace_entry);
 #endif
 }
@@ -314,6 +316,8 @@ void Parser::ParseStructDefinition() {
   TID* curTID = semantic_->GetCurrentTID();
   semantic_->DisconnectCurrentTID();
   str_entry->SetCurrentTID(curTID);
+ //curTID->parent =
+ //    semantic_->GetCurrentTID();
   semantic_->PushInCurrentTID(str_entry);
   semantic_->PushAttribute(new StructAttribute(str_entry->name, false, true, curTID));
 #endif
@@ -382,7 +386,7 @@ void Parser::ParseFunction() {
           dynamic_cast<ArgumentAttribute*>(semantic_->TopStackAttribute());
       if (!arg_attr) ThrowException("Semantic Analyzer expected Argument");
 
-      VariableTIDEntry* var_entry = new VariableTIDEntry(&arg_attr->type);
+      VariableTIDEntry* var_entry = new VariableTIDEntry(arg_attr->type.Clone());
       var_entry->name = arg_attr->name;
       func_entry->type_arguments.push_back(arg_attr->type);
       semantic_->PushInCurrentTID(var_entry);
@@ -1081,7 +1085,21 @@ void Parser::ParseUnary() {
     }
     if (tok.symbol == L"?") {
       if (!type_attr->is_lrvalue) ThrowException("Type must be LValue");
-      type_attr->type.append(L"@");
+      std::wstring base_type = type_attr->type;
+      auto iter = type_attr->type.begin();
+      for (; iter != type_attr->type.end(); ++iter) {
+        if (*iter == L'@') {
+          break;
+        }
+        if (*iter == L'[') {
+          break;
+        }
+      }
+      base_type = type_attr->type.substr(0, (iter - type_attr->type.begin()));
+      std::wstring suffix =
+          type_attr->type.substr((iter - type_attr->type.begin()));
+      suffix.insert(suffix.begin(), L'@');
+      type_attr->type = base_type + suffix;
       type_attr->is_constant = false;
       type_attr->is_lrvalue = false;
     }
@@ -1499,7 +1517,7 @@ void Parser::ParsePostfixOperations() {
       }
       
       if (!is_found) {  
-        if (args.size() > min_argc && args.size() < max_argc) {
+        if (args.size() >= min_argc && args.size() <= max_argc) {
           ThrowException("Unable to find called function overload");
         } else {
           ThrowException(
@@ -1543,8 +1561,9 @@ void Parser::ParsePostfixOperations() {
       }
       base_type = base_type.substr(0, i);
       TID* struct_tid = nullptr;
-      StructAttribute* struct_var = dynamic_cast<StructAttribute*>(type);
-      if (struct_var) struct_tid = struct_var->struct_tid_;
+      StructTIDEntry* str_entry =
+          dynamic_cast<StructTIDEntry*>(semantic_->GetCurrentTID()->FindByName(base_type));
+      if (str_entry) struct_tid = str_entry->GetCurrentTID();
       semantic_->PopAttribute();
 
       size_t actual_count = 1;
@@ -1596,6 +1615,7 @@ void Parser::ParsePostfixOperations() {
 #ifdef SEMANTIC
       StructAttribute* str_var =
           dynamic_cast<StructAttribute*>(semantic_->TopStackAttribute());
+
       if (str_var->is_ptr) {
         ThrowException("Unable to address attributes of pointer struct");
       }
@@ -1908,7 +1928,13 @@ void Parser::ParseTypeInstance() {
     ThrowException("Expected identifier");
   }
 #ifdef SEMANTIC
-  TypeAttribute* type = new TypeAttribute(curToken_.symbol, false, false);
+  StructTIDEntry* str_entry =
+      dynamic_cast<StructTIDEntry*>(semantic_->GetCurrentTID()->FindByName(curToken_.symbol));
+  TypeAttribute* type;
+  if (str_entry) {
+    type = new StructAttribute(curToken_.symbol, false, false, str_entry->GetCurrentTID());
+  }
+  type = new TypeAttribute(curToken_.symbol, false, false);
 #endif
   curToken_ = get();
   while (curToken_.symbol == L"@") {

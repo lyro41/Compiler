@@ -25,6 +25,12 @@ ITIDEntry* TID::FindByName(std::wstring name) {
   for (auto& e : entries_) {
     try {
       if(!named.ShouldPush(e)) return e;
+      if (e->GetTID()) {
+        ITIDEntry* found = e->GetTID()->FindByName(name);
+        if (found) {
+          return found;
+        }
+      }
     } catch (SemanticException&) {
       return e;
     }
@@ -58,6 +64,12 @@ std::vector<ITIDEntry*> TID::FindAllByName(std::wstring name) {
   for (auto& e : entries_) {
     try {
       if (!named.ShouldPush(e)) list.push_back(e);
+      if (e->GetTID()) {
+        ITIDEntry* found = nullptr;
+        if (found = e->GetTID()->FindByName(name)) {
+          list.push_back(found);
+        }
+      }
     } catch (SemanticException&) {
       list.push_back(e);
     }

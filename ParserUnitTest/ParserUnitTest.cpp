@@ -28,7 +28,7 @@
 #include "../Compiler/VariableTIDEntry.cpp"
 #include "../Compiler/ImportedFileTIDEntry.h"
 #include "../Compiler/ImportedFileTIDEntry.cpp"
-#include "../Compiler/NamedTIDEntry.h"
+#include "../Compiler/NamedTIDEntry.h" 
 #include "../Compiler/NamedTIDEntry.cpp"
 #include "../Compiler/TypeAttribute.h"
 #include "../Compiler/TypeAttribute.cpp"

@@ -1,0 +1,17 @@
+struct SomeStruct {
+	namespace private {
+		func priv_func() : void {
+		}
+	}
+	int32 sp = 1;
+	int32 a = 1;
+};
+
+func main() : void {
+	const int32 ARRAY_LENGTH = 10;
+	SomeStruct[] str_array = new SomeStruct[ARRAY_LENGTH];
+	for(int64 i = 0; i < ARRAY_LENGTH; ++i) {
+		str_array[i].sp = 5 + i;
+	}
+	
+}

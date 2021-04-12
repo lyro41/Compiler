@@ -1,20 +1,35 @@
-func wow() : int32[] {
-	int32[] a = new int32[5];
-	for(int32 i = 0; i < 5; ++i) {
-		a[i] = i * 113 % 10;
+namespace extractor {
+	func get_sym(int64 num, int32 shift) : bool {
+		return (num << (64 - shift)) >> 63;
 	}
-	return a;
 }
 
-func kek(float b) : int32 {
 
+namespace nm {
+	namespace in_nm {
+		func get_bin(int64 num) : bool@[] {
+			int64 t_num = (num << 1) >> 1;
+			int64 num_len = 1;	
+			while(t_num) {
+				++num_len;
+				t_num>>=1;
+			}
+			bool[] ret = new bool[num_len];
+			for(int32 ps = 0; ps < num_len; ++ps){
+				ret[ps] = extractor$get_sym(num, ps);
+			}
+			ret[num_len - 1] = num > 0;
+			return ?ret;
+		}
+	}
 }
 
-func kek(int64 a) : int32 {
 
-}
+
 
 func main() : void {
-	kek(cast<float>(wow()[1]));
-
+	int64 simp = 23432;
+	nm$in_nm$get_bin(simp);
 }
+
+

@@ -23,6 +23,8 @@ bool NamespaceTIDEntry::ShouldPush(ITIDEntry* entry) {
 
 TID* NamespaceTIDEntry::GetCurrentTID() { return tid_; }
 
+TID* NamespaceTIDEntry::GetTID() { return GetCurrentTID(); }
+
 void NamespaceTIDEntry::SetCurrentTID(TID* tid) {
   tid_ = tid;
   tid->parent = nullptr;
