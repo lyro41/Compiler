@@ -167,9 +167,12 @@
   <ItemGroup>
     <ClCompile Include="ArgumentAttribute.cpp" />
     <ClCompile Include="Attribute.cpp" />
+    <ClCompile Include="BaseTypeItem.cpp" />
     <ClCompile Include="FunctionAttribute.cpp" />
     <ClCompile Include="FunctionTIDEntry.cpp" />
+    <ClCompile Include="Generator.cpp" />
     <ClCompile Include="ImportedFileTIDEntry.cpp" />
+    <ClCompile Include="Item.cpp" />
     <ClCompile Include="JumpAttribute.cpp" />
     <ClCompile Include="LexicAnalyzer\BeginState.cpp" />
     <ClCompile Include="LexicAnalyzer\IDState.cpp" />
@@ -194,9 +197,12 @@
   <ItemGroup>
     <ClInclude Include="ArgumentAttribute.h" />
     <ClInclude Include="Attribute.h" />
+    <ClInclude Include="BaseTypeItem.h" />
     <ClInclude Include="FunctionAttribute.h" />
     <ClInclude Include="FunctionTIDEntry.h" />
+    <ClInclude Include="Generator.h" />
     <ClInclude Include="ImportedFileTIDEntry.h" />
+    <ClInclude Include="Item.h" />
     <ClInclude Include="JumpAttribute.h" />
     <ClInclude Include="LexicAnalyzer\BeginState.h" />
     <ClInclude Include="LexicAnalyzer\IDState.h" />

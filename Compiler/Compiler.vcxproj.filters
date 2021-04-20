@@ -55,6 +55,9 @@
     <Filter Include="Semantic\Source Files\Operators">
       <UniqueIdentifier>{667036ba-c55e-4206-9f24-b7c496e23aaf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Generator">
+      <UniqueIdentifier>{3c00f742-d29a-4df0-b6dd-a8af91047e1e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="LexicAnalyzer\BeginState.cpp">
@@ -132,6 +135,15 @@
     <ClCompile Include="StructAttribute.cpp">
       <Filter>Semantic\Source Files\Attributes</Filter>
     </ClCompile>
+    <ClCompile Include="Generator.cpp">
+      <Filter>LexicAnalyzer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Item.cpp">
+      <Filter>LexicAnalyzer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseTypeItem.cpp">
+      <Filter>LexicAnalyzer\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LexicAnalyzer\BeginState.h">
@@ -208,6 +220,15 @@
     </ClInclude>
     <ClInclude Include="StructAttribute.h">
       <Filter>Semantic\Header Files\Attributes</Filter>
+    </ClInclude>
+    <ClInclude Include="Generator.h">
+      <Filter>LexicAnalyzer\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Item.h">
+      <Filter>LexicAnalyzer\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseTypeItem.h">
+      <Filter>LexicAnalyzer\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

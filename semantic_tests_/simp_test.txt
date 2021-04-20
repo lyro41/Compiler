@@ -1,0 +1,38 @@
+namespace extractor {
+	func get_sym(int64 num, int32 shift) : bool;
+}
+
+
+namespace nm {
+	namespace in_nm {
+		func get_bin(int64 num) : bool@[] {
+			int64 t_num = (num << 1) >> 1;
+			int64 num_len = 1;	
+			while(t_num) {
+				++num_len;
+				t_num>>=1;
+			}
+			bool[] ret = new bool[num_len];
+			for(int32 ps = 0; ps < num_len; ++ps){
+				ret[ps] = extractor$get_sym(num, ps);
+			}
+			ret[num_len - 1] = num > 0;
+			return ?ret;
+		}
+	}
+}
+
+
+
+
+func main() : void {
+	int64 simp = 23432;
+	nm$in_nm$get_bin(simp);
+
+}
+
+
+
+func extractor$get_sym(int64 num, int32 shift) : bool {
+	return (num << (64 - shift)) >> 63;
+}
