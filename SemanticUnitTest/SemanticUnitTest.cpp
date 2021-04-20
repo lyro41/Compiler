@@ -81,7 +81,7 @@ namespace SemanticUnitTest
         return;
       }
       TID global_tid;
-      SemanticAnalyzer semantic(&global_tid);
+      SemanticAnalyzer semantic(&global_tid, cur_path);
       Parser parser(lexer, &semantic);
       try {
         parser.Parse();

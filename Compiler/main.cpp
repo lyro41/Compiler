@@ -94,7 +94,9 @@ int main(int argc, const char* argv[]) {
       return -1;
     }
     SemanticAnalyzer* semantic;
-    semantic = new SemanticAnalyzer(new TID());
+    std::string sh_file_path = argv[1];
+    std::wstring w_file_path(sh_file_path.begin(), sh_file_path.end());
+    semantic = new SemanticAnalyzer(new TID(), w_file_path);
     Parser parser(lexer, semantic);
     try {
       parser.Parse();

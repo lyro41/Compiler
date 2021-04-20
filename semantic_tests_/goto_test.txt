@@ -1,0 +1,14 @@
+
+func fun() : void {
+	label L1;
+	for(int32 i = 0; i < 10; ++i) {
+		if(i == 11) {
+			goto L2;
+		}
+	}
+	label L2;
+}
+
+func main() : void
+{
+}

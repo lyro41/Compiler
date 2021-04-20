@@ -5,11 +5,16 @@
 #include "TID.h"
 #include "Attribute.h"
 #include "TypeAttribute.h"
+#include <fstream>
 #include <stack>
+#include <set>
+
+class LexicAnalyzer;
+class Parser;
 
 class SemanticAnalyzer {
  public:
-  SemanticAnalyzer(TID* global_tid);
+  SemanticAnalyzer(TID* global_tid, std::wstring file_input);
   bool IsNumberInt(std::wstring symb);
   bool IsNumberFloat(std::wstring symb);
   bool IsNumberHex(std::wstring symb);
@@ -46,10 +51,20 @@ class SemanticAnalyzer {
   TID* GetGlobalTID();
   void CheckPrototypes();
 
+
+  void ResolveGotos();
+  void AddGotoLabel(std::wstring label);
+  void AddGotoCall(std::wstring label);
+
   std::vector<FunctionTIDEntry*> called_prototypes;
  private:
   TID* current_;
   TID* global_;
   TID* tid_prev_;
   std::stack<Attribute*> attribute_stack_;
+
+  std::wstring file_path_;
+
+  std::set<std::wstring> unresolved_gotos;
+  std::set<std::wstring> defined_labels;
 };
