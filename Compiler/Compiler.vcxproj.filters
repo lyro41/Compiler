@@ -135,13 +135,46 @@
     <ClCompile Include="StructAttribute.cpp">
       <Filter>Semantic\Source Files\Attributes</Filter>
     </ClCompile>
-    <ClCompile Include="Generator.cpp">
+    <ClCompile Include="Generator\Generator.cpp">
       <Filter>LexicAnalyzer\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Item.cpp">
       <Filter>LexicAnalyzer\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="BaseTypeItem.cpp">
+    <ClCompile Include="JumpItem.cpp">
+      <Filter>LexicAnalyzer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="JumpElseItem.cpp">
+      <Filter>LexicAnalyzer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ScopeStackClearItem.cpp">
+      <Filter>LexicAnalyzer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FuncReturnItem.cpp">
+      <Filter>LexicAnalyzer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ScopeEndItem.cpp">
+      <Filter>LexicAnalyzer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="VarItem.cpp">
+      <Filter>LexicAnalyzer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OperationItem.cpp">
+      <Filter>LexicAnalyzer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NewScopeItem.cpp">
+      <Filter>LexicAnalyzer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LabelItem.cpp">
+      <Filter>LexicAnalyzer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LitItem.cpp">
+      <Filter>LexicAnalyzer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SeparatorItem.cpp">
+      <Filter>LexicAnalyzer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ScopeBeginItem.cpp">
       <Filter>LexicAnalyzer\Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -221,13 +254,46 @@
     <ClInclude Include="StructAttribute.h">
       <Filter>Semantic\Header Files\Attributes</Filter>
     </ClInclude>
-    <ClInclude Include="Generator.h">
+    <ClInclude Include="Generator\Generator.h">
       <Filter>LexicAnalyzer\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Item.h">
       <Filter>LexicAnalyzer\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="BaseTypeItem.h">
+    <ClInclude Include="JumpItem.h">
+      <Filter>LexicAnalyzer\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="JumpElseItem.h">
+      <Filter>LexicAnalyzer\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ScopeStackClearItem.h">
+      <Filter>LexicAnalyzer\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FuncReturnItem.h">
+      <Filter>LexicAnalyzer\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ScopeEndItem.h">
+      <Filter>LexicAnalyzer\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="VarItem.h">
+      <Filter>LexicAnalyzer\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OperationItem.h">
+      <Filter>LexicAnalyzer\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NewScopeItem.h">
+      <Filter>LexicAnalyzer\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LabelItem.h">
+      <Filter>LexicAnalyzer\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LitItem.h">
+      <Filter>LexicAnalyzer\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SeparatorItem.h">
+      <Filter>LexicAnalyzer\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ScopeBeginItem.h">
       <Filter>LexicAnalyzer\Header Files</Filter>
     </ClInclude>
   </ItemGroup>

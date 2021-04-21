@@ -1,16 +1,17 @@
-# Type of lexems
-# 1 - reserved
-# 2 - identifier
-# 3 - constant
-# 4 - operator
-# 5 - punctuation
-# 6 - literal constant
+struct SomeStruct {
+	namespace private {
+		func priv_func() : void {
+		}
+	}
+	int32 sp = 1;
+	int32 a = 1;
+};
 
-#Input:
-func main(void) : void {
-
-	int[] array_of_struct;
-	int[][,] jagged_array_of_arrays;
-	int[,,] threed_array_of_struct;
-	int[,] twod_array_of_struct;
+func main() : void {
+	const int32 ARRAY_LENGTH = 10;
+	SomeStruct[] str_array = new SomeStruct[ARRAY_LENGTH];
+	for(int64 i = 0; i < ARRAY_LENGTH; ++i) {
+		str_array[i].sp = 5 + i;
+	}
+	
 }

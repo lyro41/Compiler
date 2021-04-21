@@ -217,6 +217,11 @@ void Parser::ParseProgram() {
 #ifdef SEMANTIC
   semantic_->CheckPrototypes();
 #endif
+#ifdef GENERATOR
+  for (size_t i = 0; i < generator_->program.size(); ++i) {
+      std::cout << i << ":" << generator_->program[i]->GetType().c_str() << std::endl;
+  }
+#endif // GENERATOR
 }
 
 void Parser::ParsePreprocessor() {
@@ -599,6 +604,11 @@ void Parser::ParseFuncbody() {
 }
 
 void Parser::ParseBody() {
+#ifdef GENERATOR
+    Item* it = new Item;
+    it->SetType(L"ParseBody");
+    generator_->PushItemToProgram(it);
+#endif // GENERATOR
   if (curToken_.symbol == L"{") {
     ParseFuncbody();
   } else {
@@ -687,6 +697,12 @@ void Parser::ParseMultipleStatementsInCase() {
 }
 
 void Parser::ParseVarDefs() {
+#ifdef GENERATOR
+    Item* it = new Item;
+    it->SetType(L"parseVarDefs");
+    generator_->PushItemToProgram(it);
+#endif // GENERATOR
+
   // we have const or type
   ParseType();
   // Type is on stack
@@ -733,6 +749,11 @@ void Parser::ParseVarDef() {
 }
 
 void Parser::ParseExpr() {
+#ifdef GENERATOR
+    Item* it = new Item;
+    it->SetType(L"ParseExpr");
+    generator_->PushItemToProgram(it);
+#endif // GENERATOR
   ParseAssExpr();
   while (curToken_.symbol == L",") {
 #ifdef SEMANTIC
@@ -1743,11 +1764,21 @@ void Parser::ParseFor() {
   semantic_->CreateNewTID();
   DeclareJumpableConstruction();
 #endif
+#ifdef GENERATOR
+  generator_->PushItemToProgram(new ScopeBeginItem());
+  size_t beg = 0, end = 0;
+  size_t P_end, P_if, P_step, P_inc, P_else;
+  
+  generator_->incompleteLoopJumps.push_back(LoopJumpable());
+#endif // GENERATOR
+
+
   curToken_ = get();
   if (curToken_.symbol != L"(") {
     ThrowException("Expected opening bracket");
   }
 
+  //Bruh... moment, but we need it
   curToken_ = get();
   if (IsType(curToken_) || curToken_.symbol == L"const") {
     ParseVarDefs();
@@ -1756,12 +1787,25 @@ void Parser::ParseFor() {
       ParseVarDefs();
     }
   }
+
+#ifdef GENERATOR
+  generator_->CompleteRPN();
+  P_if = generator_->GetCurrentCursor();
+#endif // GENERATOR
+
+
   if (curToken_.symbol != L";") {
     ThrowException("Expected ;");
   }
 
+
+
   curToken_ = get();
   if (curToken_.symbol != L";") {
+#ifdef GENERATOR
+      //generator_->PushItemToProgram(new LabelItem());
+      P_if = generator_->GetCurrentCursor();
+#endif // GENERATOR
     ParseExpr();
 #ifdef SEMANTIC
     TypeAttribute* type =
@@ -1772,6 +1816,15 @@ void Parser::ParseFor() {
     semantic_->PopAttribute();
 #endif
   }
+#ifdef GENERATOR
+    generator_->CompleteRPN();
+
+    generator_->PushItemToProgram(new JumpElseItem());
+    P_end = generator_->GetCurrentCursor();
+
+    generator_->PushItemToProgram(new JumpItem());
+    P_step = generator_->GetCurrentCursor();
+#endif // GENERATOR
   // bruh moment, but we need it
   if (curToken_.symbol != L";") {
     ThrowException("Expected ;");
@@ -1783,7 +1836,15 @@ void Parser::ParseFor() {
 #ifdef SEMANTIC
     semantic_->PopAttribute();
 #endif
+
   }
+#ifdef GENERATOR
+    P_inc = generator_->GetCurrentCursor() + 1;
+    generator_->CompleteRPN();
+    generator_->PushItemToProgram(new JumpItem(P_if));
+    dynamic_cast<JumpItem*>(generator_->program[P_step])->jump_ind_ = 
+        generator_->GetCurrentCursor() + 1;
+#endif // GENERATOR
 
   if (curToken_.symbol != L")") {
     ThrowException("Expected closing bracket");
@@ -1795,15 +1856,42 @@ void Parser::ParseFor() {
   semantic_->PopAttribute();
   semantic_->RemoveCurrentTID();
 #endif
+
+#ifdef GENERATOR
+  generator_->PushItemToProgram(new JumpItem(P_inc));
+#endif // GENERATOR
+
+
   if (curToken_.symbol == L"else") {
     curToken_ = get();
 #ifdef SEMANTIC
     semantic_->CreateNewTID();
 #endif
+#ifdef GENERATOR
+    P_else = generator_->GetCurrentCursor() + 1;
+#endif // GENERATOR
+
     ParseBody();
 #ifdef SEMANTIC
     semantic_->RemoveCurrentTID();
 #endif
+#ifdef GENERATOR
+    generator_->incompleteLoopJumps[generator_->incompleteLoopJumps.size() - 1].else_ind_ = P_else;
+    generator_->incompleteLoopJumps[generator_->incompleteLoopJumps.size() - 1].inc_ind_ = P_inc;
+    dynamic_cast<JumpElseItem*>(generator_->program[P_end])->jump_ind_ = generator_->GetCurrentCursor() + 1;
+    for (auto jmp : generator_->incompleteLoopJumps[generator_->incompleteLoopJumps.size() - 1].loop_jumps) {
+        if (jmp.second == LoopJumpable::Type::BREAK) {
+            dynamic_cast<JumpItem*>(generator_->program[jmp.first])->jump_ind_ =
+                generator_->incompleteLoopJumps[generator_->incompleteLoopJumps.size() - 1].else_ind_;
+        } else {
+            //Continue branch
+            dynamic_cast<JumpItem*>(generator_->program[jmp.first])->jump_ind_ =
+                generator_->incompleteLoopJumps[generator_->incompleteLoopJumps.size() - 1].inc_ind_; 
+        }
+    }
+    generator_->incompleteLoopJumps.pop_back();
+#endif // GENERATOR
+
   }
 }
 

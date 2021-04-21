@@ -49,6 +49,27 @@
 #include "../Compiler/SemanticException.h"
 #include "../Compiler/SemanticException.cpp"
 
+#include "../Compiler/Generator/Generator.h"
+#include "../Compiler/Generator/Generator.cpp"
+#include "../Compiler/Item.h"
+#include "../Compiler/Item.cpp"
+#include "../Compiler/FuncReturnItem.h"
+#include "../Compiler/FuncReturnItem.cpp"
+#include "../Compiler/JumpElseItem.h"
+#include "../Compiler/JumpElseItem.cpp"
+#include "../Compiler/JumpItem.h"
+#include "../Compiler/JumpItem.cpp"
+#include "../Compiler/LabelItem.h"
+#include "../Compiler/LabelItem.cpp"
+#include "../Compiler/ScopeEndItem.h"
+#include "../Compiler/ScopeEndItem.cpp"
+#include "../Compiler/ScopeBeginItem.h"
+#include "../Compiler/ScopeBeginItem.cpp"
+#include "../Compiler/ScopeStackClearItem.h"
+#include "../Compiler/ScopeStackClearItem.cpp"
+#include "../Compiler/VarItem.h"
+#include "../Compiler/VarItem.cpp"
+
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace SemanticUnitTest

@@ -14,15 +14,36 @@
 #include <Semantic/Semantic.h>
 #include <LexicAnalyzer/LexicAnalyzer.h>
 
+#include "Generator/Generator.h"
+#include "Item.h"
+#include "FuncReturnItem.h"
+#include "JumpElseItem.h"
+#include "JumpItem.h"
+#include "LabelItem.h"
+#include "ScopeEndItem.h"
+#include "ScopeStackClearItem.h"
+#include "VarItem.h"
+
+
+
+
 
 #define SEMANTIC
 
 #ifdef PARSER_UNIT_TEST
 #undef SEMANTIC
 #endif
+
 // Parsing principles:
 // 1 - before coming to next state, call get()
 // if curToken already contains first term of grammar rule - don`t
+#define GENERATOR
+
+#ifdef PARSER_UNIT_TEST
+#undef GENERATOR
+#endif
+
+
 
 class Parser
 {
@@ -34,6 +55,7 @@ class Parser
   Token curToken_;
   LexicAnalyzer* analyzer_;
   SemanticAnalyzer* semantic_;
+  Generator* generator_ = new Generator;
   Token get();
   std::map<std::wstring, int> type_map;
 
