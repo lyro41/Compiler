@@ -230,7 +230,9 @@ void Parser::ParsePreprocessor() {
     if (curToken_.type != Token::Type::LITCONSTANT) {
       ThrowException("Token type of literal constant expected");
     }
+    #ifdef SEMANTIC
     semantic_->TryToParseFile(curToken_.symbol);
+    #endif
     curToken_ = get();
   }
 }
@@ -405,9 +407,10 @@ void Parser::ParseFunction() {
 #endif
     ParseFuncbody();
     
-    if (!semantic_->AttributeStackEmpty())
-     semantic_->PopAttribute();
+
 #ifdef SEMANTIC
+    if (!semantic_->AttributeStackEmpty()) semantic_->PopAttribute();
+    semantic_->ResolveGotos();
     semantic_->RemoveCurrentTID();
 #endif
   } else {
@@ -1957,6 +1960,9 @@ void Parser::ParseGoto() {
   }
   if (curToken_.symbol == L"goto") {
     curToken_ = get();
+    #ifdef SEMANTIC
+      semantic_->AddGotoCall(curToken_.symbol);
+    #endif
     if (curToken_.type != Token::Type::IDENTIFIER) {
       ThrowException("Expected identifier");
     }
@@ -2072,6 +2078,9 @@ void Parser::ParseTypeInstance() {
 void Parser::ParseLabelDef() {
   // we already have label
   curToken_ = get();
+  #ifdef SEMANTIC
+  semantic_->AddGotoLabel(curToken_.symbol);
+  #endif
   if (curToken_.type != Token::Type::IDENTIFIER) {
     ThrowException("Expected identifier");
   }

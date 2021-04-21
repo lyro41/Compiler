@@ -13,8 +13,10 @@
 #include "../Compiler/Parser/Parser.h"
 #include "../Compiler/Parser/Parser.cpp"
 
+
 #include "../Compiler/Semantic/Semantic.h"
 #include "../Compiler/Semantic/Semantic.cpp"
+
 
 #include "../Compiler/TID.h"
 #include "../Compiler/TID.cpp"
@@ -64,7 +66,7 @@ namespace ParserUnitTest {
         return;
       }
       TID global_tid;
-      SemanticAnalyzer semantic(&global_tid);
+      SemanticAnalyzer semantic(&global_tid, cur_path);
       Parser parser(lexer, &semantic);
       try {
         parser.Parse();

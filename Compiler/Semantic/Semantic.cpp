@@ -1,6 +1,10 @@
 #include "Semantic.h"
+#include "LexicAnalyzer/LexicAnalyzer.h"
+#include "Parser/Parser.h"
 
-SemanticAnalyzer::SemanticAnalyzer(TID* global_tid) : global_(global_tid), current_(global_tid) {}
+
+SemanticAnalyzer::SemanticAnalyzer(TID* global_tid, std::wstring file_path)
+    : global_(global_tid), current_(global_tid), file_path_(file_path) {}
 
 bool SemanticAnalyzer::IsNumberInt(std::wstring symb) { 
   if (symb.find(L'.') == std::wstring::npos &&
@@ -62,7 +66,17 @@ void SemanticAnalyzer::TryToParseFile(std::wstring symb) {
   // TO DO
   ImportedFileTIDEntry* entry = new ImportedFileTIDEntry();
   entry->file_name = symb;
-  global_->PushInTID(entry);
+  if (global_->LocalTIDSearch(entry)) {
+    global_->PushInTID(entry);
+    std::wifstream file_stream(file_path_ + L'/' + symb);
+    if (!file_stream.is_open()) {
+      throw SemanticException(L"Unable to open " + symb + L" file");
+    }
+    LexicAnalyzer lexer(file_stream);
+    SemanticAnalyzer semantic(global_, file_path_ + L'/' + symb);
+    Parser parser(&lexer,&semantic);
+    parser.Parse();
+  }
 }
 
 void SemanticAnalyzer::StartNamespaceParse() {
@@ -102,4 +116,27 @@ void SemanticAnalyzer::CheckPrototypes() {
   for (auto& func : called_prototypes ) {
     if (func->is_proto) throw SemanticException((L"Unable to find implementation of prototype "  + func->name));
   }
+}
+
+void SemanticAnalyzer::ResolveGotos() {
+  for (auto& o_goto : unresolved_gotos) {
+    auto found_iter = defined_labels.find(o_goto);
+    if (found_iter == defined_labels.end()) {
+      throw SemanticException(o_goto + L" label is not defined in current function scope");
+    }
+  }
+  unresolved_gotos.clear();
+  defined_labels.clear();
+}
+
+void SemanticAnalyzer::AddGotoLabel(std::wstring label) {
+  auto label_found = defined_labels.find(label);
+  if (label_found != defined_labels.end()) { 
+    throw SemanticException(L"\"" + label + L"\"" L" label is already defined");
+  }
+  defined_labels.insert(label);
+}
+
+void SemanticAnalyzer::AddGotoCall(std::wstring call) {
+  unresolved_gotos.insert(call);
 }
