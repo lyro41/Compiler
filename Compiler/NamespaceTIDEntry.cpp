@@ -13,7 +13,7 @@ bool NamespaceTIDEntry::ShouldPush(ITIDEntry* entry) {
     return true;
   }
 
-  NamedTIDEntry* named = dynamic_cast<NamespaceTIDEntry*>(entry);
+  NamedTIDEntry* named = dynamic_cast<NamedTIDEntry*>(entry);
   if (named) {
     if (named->name == name)
       throw SemanticException("Namespace with same name already exists");

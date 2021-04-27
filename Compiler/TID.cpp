@@ -20,13 +20,13 @@ void TID::PushInTID(ITIDEntry* entry) {
     entries_.push_back(entry);
 }
 
-ITIDEntry* TID::FindByName(std::wstring name) { 
+ITIDEntry* TID::FindByName(std::wstring name, bool gettoparent) { 
   NamedTIDEntry named(name);
   for (auto& e : entries_) {
     try {
       if(!named.ShouldPush(e)) return e;
       if (e->GetTID()) {
-        ITIDEntry* found = e->GetTID()->FindByName(name);
+        ITIDEntry* found = e->GetTID()->FindByName(name, false);
         if (found) {
           return found;
         }
@@ -35,11 +35,12 @@ ITIDEntry* TID::FindByName(std::wstring name) {
       return e;
     }
   }
-  if (parent) {
+  if (parent && gettoparent) {
     return parent->FindByName(name);
   }
   return nullptr;
 }
+
 template <typename T>
 T* TID::FindByName(std::wstring name) {
   NamedTIDEntry named(name);

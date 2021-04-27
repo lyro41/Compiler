@@ -9,7 +9,7 @@ class TID {
   bool LocalTIDSearch(ITIDEntry* entry);
   bool DeepTIDSearch(ITIDEntry* entry);
   void PushInTID(ITIDEntry* entry);
-  ITIDEntry* FindByName(std::wstring name);
+  ITIDEntry* FindByName(std::wstring name, bool gettoparent = true);
   template<typename T>
   T* FindByName(std::wstring name);
   std::vector<ITIDEntry*> FindAllByName(std::wstring name);
