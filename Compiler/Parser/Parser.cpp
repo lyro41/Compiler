@@ -201,9 +201,9 @@ void Parser::ThrowException(std::string message) {
 }
 
 void Parser::AddType(std::wstring token_sym) {
-  if (type_map.find(token_sym) != type_map.end()) {
-    ThrowException("Struct redefinition");
-  }
+  //if (type_map.find(token_sym) != type_map.end()) {
+  //  ThrowException("Struct redefinition");
+  //}
   type_map[token_sym] = -1;
 }
 
@@ -300,6 +300,7 @@ void Parser::ParseStructDefinition() {
   }
   // AddType is semantic, but required for parser
   AddType(curToken_.symbol);
+
   #ifdef SEMANTIC
   StructTIDEntry* str_entry = new StructTIDEntry();
   str_entry->name = curToken_.symbol;

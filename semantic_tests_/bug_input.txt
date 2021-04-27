@@ -5,7 +5,6 @@ struct SomeStruct {
     }
     int32 k = 2;
   }
-  int32 private;
   struct sm {
     func sm_prib() : int32 {
       return 3;
@@ -17,6 +16,10 @@ struct SomeStruct {
   func sm_pffrib() : int32 {
       return 3;
   }
+};
+
+struct sm {
+
 };
 
 
@@ -34,7 +37,6 @@ func main() : int32 {
   }
   SomeStruct b;
   b.private$k + 1;
-  b.private + 2;
   label MEM;
   {
    2 + 2;
