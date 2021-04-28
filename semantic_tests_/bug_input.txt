@@ -1,5 +1,45 @@
-import "complex_input.txt"
+struct SomeStruct {
+  namespace private {
+    func priv_func() : void {
+    label stt;
+    }
+    int32 k = 2;
+  }
+  struct sm {
+    func sm_prib() : int32 {
+      return 3;
+    }
+  };
+  sm b;
+  int32 sp = 1;
+  int32 a = 1 + sp;
+  func sm_pffrib() : int32 {
+      return 3;
+  }
+};
 
-func smth() : void {
-	wow();
+struct sm {
+
+};
+
+
+func main() : int32 {
+  const int32 ARRAY_LENGTH = 10;
+  SomeStruct[] str_array = new SomeStruct[ARRAY_LENGTH];
+  for(; ;) {
+    for(int32 i = 0; i<5; ++i){
+      5 + i;
+    }
+    goto MEM;
+    break;
+  } else {
+    5+4;
+  }
+  SomeStruct b;
+  b.private$k + 1;
+  label MEM;
+  {
+   2 + 2;
+  }
+
 }

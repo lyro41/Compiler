@@ -19,7 +19,7 @@ bool StructTIDEntry::ShouldPush(ITIDEntry* entry) {
   return true;
 }
 
-TID* StructTIDEntry::GetTID() { return GetCurrentTID(); }
+TID* StructTIDEntry::GetTID() { return nullptr; }
 
 void StructTIDEntry::SetCurrentTID(TID* _tid) {
   tid_ = _tid; }
