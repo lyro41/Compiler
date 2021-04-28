@@ -5,5 +5,8 @@ class LabelItem :
 {
 public:
     LabelItem();
+    LabelItem(std::wstring name);
+    
+    std::wstring name_;
 };
 

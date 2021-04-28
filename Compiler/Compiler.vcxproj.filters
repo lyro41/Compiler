@@ -177,6 +177,9 @@
     <ClCompile Include="ScopeBeginItem.cpp">
       <Filter>LexicAnalyzer\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Scope.cpp">
+      <Filter>LexicAnalyzer\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LexicAnalyzer\BeginState.h">
@@ -294,6 +297,9 @@
       <Filter>LexicAnalyzer\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ScopeBeginItem.h">
+      <Filter>LexicAnalyzer\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Scope.h">
       <Filter>LexicAnalyzer\Header Files</Filter>
     </ClInclude>
   </ItemGroup>

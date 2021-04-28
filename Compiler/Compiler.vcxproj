@@ -191,6 +191,7 @@
     <ClCompile Include="NewScopeItem.cpp" />
     <ClCompile Include="OperationItem.cpp" />
     <ClCompile Include="Parser\Parser.cpp" />
+    <ClCompile Include="Scope.cpp" />
     <ClCompile Include="ScopeBeginItem.cpp" />
     <ClCompile Include="ScopeEndItem.cpp" />
     <ClCompile Include="ScopeStackClearItem.cpp" />
@@ -231,6 +232,7 @@
     <ClInclude Include="NewScopeItem.h" />
     <ClInclude Include="OperationItem.h" />
     <ClInclude Include="Parser\Parser.h" />
+    <ClInclude Include="Scope.h" />
     <ClInclude Include="ScopeBeginItem.h" />
     <ClInclude Include="ScopeEndItem.h" />
     <ClInclude Include="ScopeStackClearItem.h" />

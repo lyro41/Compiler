@@ -208,6 +208,7 @@ void Parser::AddType(std::wstring token_sym) {
 }
 
 void Parser::ParseProgram() {
+
   curToken_ = get();
   ParsePreprocessor();
   ParseGlobalStatement();
@@ -219,7 +220,15 @@ void Parser::ParseProgram() {
 #endif
 #ifdef GENERATOR
   for (size_t i = 0; i < generator_->program.size(); ++i) {
-      std::cout << i << ":" << generator_->program[i]->GetType().c_str() << std::endl;
+      std::wcout << i << ":" << generator_->program[i]->GetType();
+      if (dynamic_cast<JumpElseItem*>(generator_->program[i])) {
+          std::wcout << " index: " << dynamic_cast<JumpElseItem*>(generator_->program[i])->jump_ind_;
+      } else if (dynamic_cast<JumpItem*>(generator_->program[i])) {
+          std::wcout << " index: " << dynamic_cast<JumpItem*>(generator_->program[i])->jump_ind_;
+      } else if (dynamic_cast<LabelItem*>(generator_->program[i])) {
+          std::wcout << " index: " << dynamic_cast<LabelItem*>(generator_->program[i])->name_;
+      }
+      std::wcout << std::endl;
   }
 #endif // GENERATOR
 }
@@ -298,18 +307,29 @@ void Parser::ParseNamespaceDefinition() {
 }
 
 void Parser::ParseStructDefinition() {
-  // we already have struct
-  curToken_ = get();
-  if (curToken_.type != Token::Type::IDENTIFIER) {
-    ThrowException("Expected identifier");
-  }
-  // AddType is semantic, but required for parser
-  AddType(curToken_.symbol);
-  #ifdef SEMANTIC
-  StructTIDEntry* str_entry = new StructTIDEntry();
-  str_entry->name = curToken_.symbol;
-  semantic_->CreateNewTID();
-  #endif
+    // we already have struct
+    curToken_ = get();
+    if (curToken_.type != Token::Type::IDENTIFIER) {
+        ThrowException("Expected identifier");
+    }
+    // AddType is semantic, but required for parser
+    AddType(curToken_.symbol);
+#ifdef SEMANTIC
+    StructTIDEntry* str_entry = new StructTIDEntry();
+    str_entry->name = curToken_.symbol;
+    semantic_->CreateNewTID();
+    auto this_ptr = new VariableTIDEntry(new TypeAttribute(curToken_.symbol + L"@", false, false));
+    this_ptr->name = L"this";
+    semantic_->PushInCurrentTID(this_ptr);
+#endif
+#ifdef GENERATOR
+    NameTable* n_table = new NameTable(curToken_.symbol, NameTable::TableType::STRUCT);
+    generator_->current_table->add_son(n_table);
+    generator_->current_table = n_table;
+    n_table->jump_in = generator_->GetCurrentCursor() + 1;
+#endif // GENERATOR
+
+
   curToken_ = get();
   if (curToken_.symbol != L"{") {
     ThrowException("Expected curly opening bracket");
@@ -328,6 +348,12 @@ void Parser::ParseStructDefinition() {
   semantic_->PushInCurrentTID(str_entry);
   semantic_->PushAttribute(new StructAttribute(str_entry->name, false, true, curTID));
 #endif
+#ifdef GENERATOR
+  generator_->PushItemToProgram(new JumpItem(true, 0));
+  generator_->current_table->update_size();
+  generator_->current_table = generator_->current_table->parrent;
+#endif 
+
   curToken_ = get();
   if (curToken_.symbol != L";") {
     ParseVars();
@@ -348,7 +374,7 @@ void Parser::ParseFunction() {
   if (curToken_.type != Token::Type::IDENTIFIER) {
     if (curToken_.type == Token::Type::RESERVED) {
       ThrowException("Misuse of reserved word");
-    } else {
+    } else {    
       ThrowException("Identifier expected");
     }
   }
@@ -361,6 +387,10 @@ void Parser::ParseFunction() {
   if (curToken_.symbol != L"(") {
     ThrowException("Expected opening brackets");
   }
+#ifdef GENERATOR
+  generator_->PushItemToProgram(new ScopeBeginItem());
+  generator_->should_skip = true;
+#endif // GENERATOR
 
   curToken_ = get();
   ParseArguments();
@@ -426,6 +456,7 @@ void Parser::ParseFunction() {
 #endif
     curToken_ = get();
   }
+
 }
 
 /// <summary>
@@ -596,12 +627,20 @@ void Parser::ParseFuncbody() {
   if (curToken_.symbol != L"{") {
     ThrowException("Expected opening curly bracket");
   }
+#ifdef GENERATOR
+  generator_->PushItemToProgram(new ScopeBeginItem());
+#endif // GENERATOR
 
   curToken_ = get();
   ParseMultipleStatements();
   if (curToken_.symbol != L"}") {
     ThrowException("Expected closing curly bracket");
   }
+
+#ifdef GENERATOR
+  generator_->PushItemToProgram(new ScopeEndItem());
+#endif // GENERATOR
+
 
   curToken_ = get();
 }
@@ -615,7 +654,15 @@ void Parser::ParseBody() {
   if (curToken_.symbol == L"{") {
     ParseFuncbody();
   } else {
+#ifdef GENERATOR
+      generator_->PushItemToProgram(new ScopeBeginItem());
+#endif // GENERATOR
+
     ParseStatement();
+#ifdef GENERATOR
+    generator_->PushItemToProgram(new ScopeEndItem());
+#endif // GENERATOR
+
   }
 }
 
@@ -717,6 +764,7 @@ void Parser::ParseVarDefs() {
 }
 
 void Parser::ParseVars() {
+
   ParseVarDef();
   while (curToken_.symbol == L",") {
     curToken_ = get();
@@ -736,6 +784,10 @@ void Parser::ParseVarDef() {
   var_entry->name = curToken_.symbol;
   semantic_->PushInCurrentTID(var_entry);
 #endif
+#ifdef GENERATOR
+  
+#endif // GENERATOR
+
   curToken_ = get();
   if (curToken_.symbol == L"=") {
     curToken_ = get();
@@ -1672,6 +1724,7 @@ void Parser::ParseIf() {
     ThrowException("Expected closing brackets");
   }
 
+
   curToken_ = get();
   ParseBody();
   ParseElseAlternatives();
@@ -1793,7 +1846,7 @@ void Parser::ParseFor() {
 
 #ifdef GENERATOR
   generator_->CompleteRPN();
-  P_if = generator_->GetCurrentCursor();
+  P_if = generator_->GetCurrentCursor() + 1;
 #endif // GENERATOR
 
 
@@ -1807,7 +1860,7 @@ void Parser::ParseFor() {
   if (curToken_.symbol != L";") {
 #ifdef GENERATOR
       //generator_->PushItemToProgram(new LabelItem());
-      P_if = generator_->GetCurrentCursor();
+      //P_if = generator_->GetCurrentCursor();
 #endif // GENERATOR
     ParseExpr();
 #ifdef SEMANTIC
@@ -1823,7 +1876,7 @@ void Parser::ParseFor() {
     generator_->CompleteRPN();
 
     generator_->PushItemToProgram(new JumpElseItem());
-    P_end = generator_->GetCurrentCursor();
+    P_else = generator_->GetCurrentCursor();
 
     generator_->PushItemToProgram(new JumpItem());
     P_step = generator_->GetCurrentCursor();
@@ -1834,6 +1887,9 @@ void Parser::ParseFor() {
   }
 
   curToken_ = get();
+#ifdef GENERATOR
+  P_inc = generator_->GetCurrentCursor() + 1;
+#endif // GENERATOR
   if (curToken_.symbol != L")") {
     ParseExpr();
 #ifdef SEMANTIC
@@ -1842,7 +1898,6 @@ void Parser::ParseFor() {
 
   }
 #ifdef GENERATOR
-    P_inc = generator_->GetCurrentCursor() + 1;
     generator_->CompleteRPN();
     generator_->PushItemToProgram(new JumpItem(P_if));
     dynamic_cast<JumpItem*>(generator_->program[P_step])->jump_ind_ = 
@@ -1862,40 +1917,40 @@ void Parser::ParseFor() {
 
 #ifdef GENERATOR
   generator_->PushItemToProgram(new JumpItem(P_inc));
+  dynamic_cast<JumpElseItem*>(generator_->program[P_else])->jump_ind_ = generator_->GetCurrentCursor() + 1;
+  P_else = generator_->GetCurrentCursor();
 #endif // GENERATOR
-
-
   if (curToken_.symbol == L"else") {
     curToken_ = get();
 #ifdef SEMANTIC
     semantic_->CreateNewTID();
 #endif
-#ifdef GENERATOR
-    P_else = generator_->GetCurrentCursor() + 1;
-#endif // GENERATOR
-
     ParseBody();
 #ifdef SEMANTIC
     semantic_->RemoveCurrentTID();
 #endif
+
+  }
 #ifdef GENERATOR
-    generator_->incompleteLoopJumps[generator_->incompleteLoopJumps.size() - 1].else_ind_ = P_else;
-    generator_->incompleteLoopJumps[generator_->incompleteLoopJumps.size() - 1].inc_ind_ = P_inc;
-    dynamic_cast<JumpElseItem*>(generator_->program[P_end])->jump_ind_ = generator_->GetCurrentCursor() + 1;
+  P_end = generator_->GetCurrentCursor() + 1;
+  generator_->incompleteLoopJumps[generator_->incompleteLoopJumps.size() - 1].end_ind_ = P_end;
+  generator_->incompleteLoopJumps[generator_->incompleteLoopJumps.size() - 1].inc_ind_ = P_inc;
+  std::wcout << " pend" << P_end << std::endl;
+  //dynamic_cast<JumpElseItem*>(generator_->program[P_end])->jump_ind_ = generator_->GetCurrentCursor() + 1;
     for (auto jmp : generator_->incompleteLoopJumps[generator_->incompleteLoopJumps.size() - 1].loop_jumps) {
         if (jmp.second == LoopJumpable::Type::BREAK) {
             dynamic_cast<JumpItem*>(generator_->program[jmp.first])->jump_ind_ =
-                generator_->incompleteLoopJumps[generator_->incompleteLoopJumps.size() - 1].else_ind_;
+                generator_->incompleteLoopJumps[generator_->incompleteLoopJumps.size() - 1].end_ind_;
         } else {
             //Continue branch
             dynamic_cast<JumpItem*>(generator_->program[jmp.first])->jump_ind_ =
                 generator_->incompleteLoopJumps[generator_->incompleteLoopJumps.size() - 1].inc_ind_; 
         }
     }
-    generator_->incompleteLoopJumps.pop_back();
+  generator_->incompleteLoopJumps.pop_back();
+
 #endif // GENERATOR
 
-  }
 }
 
 void Parser::ParseDowhile() {
@@ -1944,6 +1999,12 @@ void Parser::ParseGoto() {
       ThrowException("Can`t break from nothing");
     }
   #endif
+  #ifdef GENERATOR
+    generator_->PushItemToProgram(new JumpItem());
+    generator_->incompleteLoopJumps[generator_->incompleteLoopJumps.size() - 1]
+        .loop_jumps.push_back(std::pair<int, LoopJumpable::Type>(generator_->GetCurrentCursor(), LoopJumpable::Type::BREAK));
+  #endif // GENERATOR
+
     curToken_ = get();
     return;
   }
@@ -1955,6 +2016,11 @@ void Parser::ParseGoto() {
       ThrowException("Can`t continue from nothing");
     }
 #endif
+#ifdef GENERATOR
+    generator_->PushItemToProgram(new JumpItem());
+    generator_->incompleteLoopJumps[generator_->incompleteJumps.size() - 1]
+        .loop_jumps.push_back(std::pair<int, LoopJumpable::Type>(generator_->GetCurrentCursor(), LoopJumpable::Type::CONTINUE));
+#endif // GENERATOR
     curToken_ = get();
     return;
   }
@@ -1967,6 +2033,12 @@ void Parser::ParseGoto() {
       ThrowException("Expected identifier");
     }
     curToken_ = get();
+#ifdef GENERATOR
+    generator_->PushItemToProgram(new JumpItem());
+    generator_->incompleteJumps.push_back(std::pair<size_t, std::wstring>(generator_->GetCurrentCursor(), curToken_.symbol));
+    generator_->incompleteLoopJumps[generator_->incompleteJumps.size() - 1]
+        .loop_jumps.push_back(std::pair<size_t, LoopJumpable::Type>(generator_->GetCurrentCursor(), LoopJumpable::Type::BREAK));
+#endif // GENERATOR
     return;
   }
   if (curToken_.symbol == L"label") {
@@ -2084,6 +2156,11 @@ void Parser::ParseLabelDef() {
   if (curToken_.type != Token::Type::IDENTIFIER) {
     ThrowException("Expected identifier");
   }
+#ifdef GENERATOR
+  generator_->PushItemToProgram(new LabelItem(curToken_.symbol));
+  generator_->labels[curToken_.symbol] = generator_->GetCurrentCursor();
+#endif // GENERATOR
+
   curToken_ = get();
 }
 

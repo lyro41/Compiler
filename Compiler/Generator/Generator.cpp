@@ -5,7 +5,12 @@ void Generator::PushItemToRpn(Item* item) {
 }
 
 void Generator::PushItemToProgram(Item* item) {
-    program.push_back(item);
+    if(!should_skip)
+        program.push_back(item);
+    else {
+        should_skip = false;
+        delete item;
+    }
 }
 
 size_t Generator::GetCurrentCursor()
@@ -35,11 +40,11 @@ void Generator::PushSeparator() {
     //buffer_.push_back(new SeparatorItem());
 }
 
-void Generator::PushFor() {
-   
-}
+//void Generator::PushFor() {
+//   
+//}
 
-void Generator::PushIf() {
-    CompleteRPN(0, buffer_.size());
-    PushItemToProgram(new JumpElseItem());
-}
+//void Generator::PushIf() {
+//    CompleteRPN(0, buffer_.size());
+//    PushItemToProgram(new JumpElseItem());
+//}
